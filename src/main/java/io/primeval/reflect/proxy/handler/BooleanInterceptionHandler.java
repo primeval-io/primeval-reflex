@@ -1,0 +1,35 @@
+package io.primeval.reflect.proxy.handler;
+
+import io.primeval.reflect.proxy.arguments.Arguments;
+import io.primeval.reflect.proxy.arguments.ArgumentsProvider;
+
+public interface BooleanInterceptionHandler extends ArgumentsProvider {
+
+    // Proceed with overridden arguments and return the normal value
+    <E extends Throwable> boolean invoke(Arguments arguments) throws E;
+
+    // Proceed with default arguments and return the normal value
+    default <E extends Throwable> boolean invoke() throws E {
+        return invoke(getArguments());
+    }
+
+    default public ObjectInterceptionHandler<Boolean> boxed() {
+        return new ObjectInterceptionHandler<Boolean>() {
+
+            @Override
+            public <E extends Throwable> Boolean invoke(Arguments arguments) throws E {
+                return BooleanInterceptionHandler.this.invoke(arguments);
+            }
+
+            @Override
+            public <E extends Throwable> Boolean invoke() throws E {
+                return BooleanInterceptionHandler.this.invoke();
+            }
+
+            @Override
+            public Arguments getArguments() {
+                return BooleanInterceptionHandler.this.getArguments();
+            }
+        };
+    }
+}

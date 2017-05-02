@@ -1,0 +1,9 @@
+language: java
+jdk:
+- oraclejdk8
+sudo: false
+dist: trusty
+script: mvn clean verify
+after_success:
+- git clone --depth=1 https://github.com/primeval-io/travis-ci-build-setup.git
+- bash travis-ci-build-setup/maybe-deploy-snapshot.sh
