@@ -6,9 +6,9 @@ import io.primeval.reflect.proxy.handler.DoubleInterceptionHandler;
 public final class M2InterceptionHandler implements DoubleInterceptionHandler {
 
     private final TheoreticalDelegate delegate;
-    private final Arguments arguments;
+    private final M2Args arguments;
 
-    public M2InterceptionHandler(TheoreticalDelegate delegate, Arguments arguments) {
+    public M2InterceptionHandler(TheoreticalDelegate delegate, M2Args arguments) {
         this.delegate = delegate;
         this.arguments = arguments;
     }
@@ -20,7 +20,17 @@ public final class M2InterceptionHandler implements DoubleInterceptionHandler {
 
     @Override
     public double invoke(Arguments arguments) throws Exception {
-        return delegate.foo(42.0, null);
+        if (arguments instanceof M2Args) {
+            M2Args m2Args = (M2Args) arguments;
+            return delegate.foo(m2Args.a, m2Args.b);
+        }
+        return delegate.foo(arguments.doubleArg("a"), arguments.objectArg("b"));
+    }
+    
+    @Override
+    public <E extends Throwable> double invoke() throws E {
+        M2Args m2Args = arguments;
+        return delegate.foo(m2Args.a, m2Args.b);
     }
 
 }

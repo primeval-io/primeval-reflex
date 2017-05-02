@@ -12,7 +12,7 @@ public final class ProxyUtils {
         try {
             return clazz.getMethod(methodName, params);
         } catch (NoSuchMethodException | SecurityException e) {
-            throw new AssertionError("Inconsistent weaving");
+            throw new AssertionError("Inconsistent proxy");
         }
     }
 

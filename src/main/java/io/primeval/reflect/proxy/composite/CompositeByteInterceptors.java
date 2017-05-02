@@ -12,7 +12,7 @@ public final class CompositeByteInterceptors {
         byte applyAsByte(A a);
     }
 
-    public static <T, E extends Throwable> byte call(int interceptorId, Interceptor[] interceptors, CallContext context,
+    public static <E extends Throwable> byte call(int interceptorId, Interceptor[] interceptors, CallContext context,
             Arguments currentArguments,
             ToByteFunction<Arguments> terminalInvokeFun) throws E {
         Interceptor interceptor = interceptors[interceptorId];

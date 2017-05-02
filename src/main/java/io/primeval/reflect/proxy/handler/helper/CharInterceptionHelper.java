@@ -9,6 +9,7 @@ public final class CharInterceptionHelper extends InterceptionHelper {
     private final CharInterceptionHandler handler;
 
     public CharInterceptionHelper(CallContext context, CharInterceptionHandler handler) {
+        super(handler);
         this.handler = handler;
     }
 

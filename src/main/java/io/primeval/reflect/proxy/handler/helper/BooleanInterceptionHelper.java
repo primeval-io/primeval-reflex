@@ -9,6 +9,7 @@ public final class BooleanInterceptionHelper extends InterceptionHelper {
     private final BooleanInterceptionHandler handler;
 
     public BooleanInterceptionHelper(CallContext context, BooleanInterceptionHandler handler) {
+        super(handler);
         this.handler = handler;
     }
 

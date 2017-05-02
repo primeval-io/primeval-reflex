@@ -12,7 +12,7 @@ public final class CompositeFloatInterceptors {
         float applyAsFloat(A a);
     }
 
-    public static <T, E extends Throwable> float call(int interceptorId, Interceptor[] interceptors,
+    public static <E extends Throwable> float call(int interceptorId, Interceptor[] interceptors,
             CallContext context,
             Arguments currentArguments,
             ToFloatFunction<Arguments> terminalInvokeFun) throws E {

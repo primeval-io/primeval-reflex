@@ -9,7 +9,7 @@ import io.primeval.reflect.proxy.handler.VoidInterceptionHandler;
 
 public final class CompositeVoidInterceptors {
 
-    public static <T, E extends Throwable> void call(int interceptorId, Interceptor[] interceptors, CallContext context,
+    public static <E extends Throwable> void call(int interceptorId, Interceptor[] interceptors, CallContext context,
             Arguments currentArguments,
             Consumer<Arguments> terminalInvokeFun) throws E {
         Interceptor interceptor = interceptors[interceptorId];

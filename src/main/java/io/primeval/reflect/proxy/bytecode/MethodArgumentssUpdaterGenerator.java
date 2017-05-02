@@ -17,34 +17,34 @@ import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 
-public final class ProxyClassMethodArgsGenerator implements Opcodes {
+public final class MethodArgumentssUpdaterGenerator implements Opcodes {
 
-    public static final String SUFFIX_START = "$argsFor$";
+    public static final String SUFFIX_START = "$argsUpFor$";
 
-    public static String getName(Class<?> wovenParentClass, Method method, int methodId) {
+    public static String getName(Class<?> classToProxy, Method method, int methodId) {
         String suffix = SUFFIX_START + method.getName() + methodId;
-        return wovenParentClass.getName() + suffix;
+        return classToProxy.getName() + suffix;
     }
 
-    public static byte[] generateMethodArgs(Class<?> wovenParentClass, Method method, int methodId) throws Exception {
+    public static byte[] generateMethodArgsUpdater(Class<?> classToProxy, Method method, int methodId) throws Exception {
 
-        ClassWriter cw = new ClassWriter(0);
+        ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_MAXS);
 
-        String wovenClassDescriptor = Type.getDescriptor(wovenParentClass);
-        String wovenClassInternalName = Type.getInternalName(wovenParentClass);
+        String classToProxyDescriptor = Type.getDescriptor(classToProxy);
+        String classToProxyInternalName = Type.getInternalName(classToProxy);
 
         String suffix = SUFFIX_START + method.getName() + methodId;
-        String selfClassInternalName = wovenClassInternalName + suffix;
-        String selfClassDescriptor = makeSelfClassDescriptor(wovenClassDescriptor, suffix);
+        String selfClassInternalName = classToProxyInternalName + suffix;
+        String selfClassDescriptor = ReflectUtils.makeSuffixClassDescriptor(classToProxyDescriptor, suffix);
 
-        String updaterClassInternalName = wovenClassInternalName + ProxyClassArgsUpdaterGenerator.SUFFIX_START + method.getName() + methodId;
+        String argsClassInternalName = classToProxyInternalName + MethodArgumentsGenerator.SUFFIX_START + method.getName() + methodId;
 
         String constDesc = Type.getMethodDescriptor(Type.VOID_TYPE,
                 Stream.concat(Stream.of(List.class), Stream.of(method.getParameterTypes())).map(Type::getType)
                         .toArray(Type[]::new));
 
         cw.visit(52, ACC_PUBLIC + ACC_FINAL + ACC_SUPER, selfClassInternalName, null, "java/lang/Object",
-                new String[] { "io/primeval/aspecio/aspect/interceptor/arguments/Arguments" });
+                new String[] {  "io/primeval/reflect/proxy/arguments/ArgumentsUpdater" });
         Parameter[] parameters = method.getParameters();
 
         generateFields(method, cw, parameters);
@@ -53,25 +53,27 @@ public final class ProxyClassMethodArgsGenerator implements Opcodes {
         generateEqualsMethod(cw, selfClassInternalName, selfClassDescriptor, parameters);
         generateToStringMethod(cw, selfClassInternalName, selfClassDescriptor, parameters);
 
-        generateUpdaterMethod(cw, selfClassInternalName, selfClassDescriptor, updaterClassInternalName, constDesc, parameters);
+
+        generateUpdateMethod(cw, selfClassInternalName, selfClassDescriptor, argsClassInternalName, constDesc, parameters);
 
         generateParametersGetter(cw, selfClassInternalName, selfClassDescriptor);
+
+        generateArgumentSetters(cw, selfClassInternalName, selfClassDescriptor, parameters);
         generateArgumentGetters(cw, selfClassInternalName, selfClassDescriptor, parameters);
         cw.visitEnd();
 
         return cw.toByteArray();
     }
 
-    private static void generateUpdaterMethod(ClassWriter cw, String selfClassInternalName, String selfClassDescriptor,
-            String updaterClassInternalName,
+    private static void generateUpdateMethod(ClassWriter cw, String selfClassInternalName, String selfClassDescriptor,
+            String argsClassInternalName,
             String constDesc, Parameter[] parameters) {
         MethodVisitor mv;
-
-        mv = cw.visitMethod(ACC_PUBLIC, "updater", "()Lio/primeval/aspecio/aspect/interceptor/arguments/ArgumentsUpdater;", null, null);
+        mv = cw.visitMethod(ACC_PUBLIC, "update", "()Lio/primeval/reflect/proxy/arguments/Arguments;", null, null);
         mv.visitCode();
         Label l0 = new Label();
         mv.visitLabel(l0);
-        mv.visitTypeInsn(NEW, updaterClassInternalName);
+        mv.visitTypeInsn(NEW, argsClassInternalName);
         mv.visitInsn(DUP);
         mv.visitVarInsn(ALOAD, 0);
         mv.visitFieldInsn(GETFIELD, selfClassInternalName, "parameters", "Ljava/util/List;");
@@ -80,25 +82,26 @@ public final class ProxyClassMethodArgsGenerator implements Opcodes {
             mv.visitVarInsn(ALOAD, 0);
             mv.visitFieldInsn(GETFIELD, selfClassInternalName, parameter.getName(), Type.getDescriptor(parameter.getType()));
         }
-        mv.visitMethodInsn(INVOKESPECIAL, updaterClassInternalName, "<init>", constDesc, false);
+        mv.visitMethodInsn(INVOKESPECIAL, argsClassInternalName, "<init>", constDesc, false);
         mv.visitInsn(ARETURN);
         Label l1 = new Label();
         mv.visitLabel(l1);
         mv.visitLocalVariable("this", selfClassDescriptor, null, l0, l1, 0);
-        mv.visitMaxs(parameters.length + 3, 1);
+        mv.visitMaxs(-1, -1);
         mv.visitEnd();
     }
 
+
     private static void generateFields(Method method, ClassWriter cw, Parameter[] parameters) {
         FieldVisitor fv;
-        cw.visitSource(method.getName() + "Args@@aspecio", null);
+        cw.visitSource(method.getName() + "ArgsUpdater@@aspecio", null);
 
         fv = cw.visitField(ACC_PUBLIC + ACC_FINAL, "parameters", "Ljava/util/List;", "Ljava/util/List<Ljava/lang/reflect/Parameter;>;",
                 null);
         fv.visitEnd();
 
         for (Parameter p : parameters) {
-            fv = cw.visitField(ACC_PUBLIC + ACC_FINAL, p.getName(), Type.getDescriptor(p.getType()), null, null);
+            fv = cw.visitField(ACC_PUBLIC, p.getName(), Type.getDescriptor(p.getType()), null, null);
             fv.visitEnd();
         }
     }
@@ -106,7 +109,6 @@ public final class ProxyClassMethodArgsGenerator implements Opcodes {
     private static void generateConstructor(Method method, ClassWriter cw, String selfClassInternalName, String selfClassDescriptor,
             String constDesc, Parameter[] parameters) {
         MethodVisitor mv;
-
         mv = cw.visitMethod(ACC_PUBLIC, "<init>", constDesc, null, null);
         mv.visitParameter("parameters", 0);
         int paramCount = parameters.length;
@@ -147,7 +149,7 @@ public final class ProxyClassMethodArgsGenerator implements Opcodes {
             Parameter parameter = parameters[i];
             mv.visitLocalVariable(parameter.getName(), Type.getDescriptor(parameter.getType()), null, l0, l7, paramIndices[i]);
         }
-        mv.visitMaxs(2, nextVarIndex);
+        mv.visitMaxs(-1, -1);
         mv.visitEnd();
     }
 
@@ -190,7 +192,7 @@ public final class ProxyClassMethodArgsGenerator implements Opcodes {
         mv.visitLabel(l7);
         mv.visitLocalVariable("this", selfClassDescriptor, null, l0, l7, 0);
         mv.visitLocalVariable("result", "I", null, l0, l7, 1);
-        mv.visitMaxs(2, 2);
+        mv.visitMaxs(-1, -1);
         mv.visitEnd();
     }
 
@@ -277,7 +279,7 @@ public final class ProxyClassMethodArgsGenerator implements Opcodes {
         mv.visitLocalVariable("this", selfClassDescriptor, null, l0, l9, 0);
         mv.visitLocalVariable("obj", "Ljava/lang/Object;", null, l0, l9, 1);
         mv.visitLocalVariable("other", selfClassDescriptor, null, l7, l9, 2);
-        mv.visitMaxs(2, 3);
+        mv.visitMaxs(-1, -1);
         mv.visitEnd();
     }
 
@@ -329,7 +331,7 @@ public final class ProxyClassMethodArgsGenerator implements Opcodes {
         Label l1 = new Label();
         mv.visitLabel(l1);
         mv.visitLocalVariable("this", selfClassDescriptor, null, l0, l1, 0);
-        mv.visitMaxs(3, 1);
+        mv.visitMaxs(-1, -1);
         mv.visitEnd();
     }
 
@@ -345,7 +347,104 @@ public final class ProxyClassMethodArgsGenerator implements Opcodes {
         Label l1 = new Label();
         mv.visitLabel(l1);
         mv.visitLocalVariable("this", selfClassDescriptor, null, l0, l1, 0);
-        mv.visitMaxs(1, 1);
+        mv.visitMaxs(-1, -1);
+        mv.visitEnd();
+    }
+
+    private static void generateArgumentSetters(ClassWriter cw, String selfClassInternalName, String selfClassDescriptor,
+            Parameter[] parameters) {
+        MethodVisitor mv;
+        {
+            mv = cw.visitMethod(ACC_PUBLIC, "setObjectArg",
+                    "(Ljava/lang/String;Ljava/lang/Object;)Lio/primeval/reflect/proxy/arguments/ArgumentsUpdater;",
+                    "<T:Ljava/lang/Object;>(Ljava/lang/String;TT;)V", null);
+            generateArgSetterCode(Object.class, mv, selfClassInternalName, selfClassDescriptor, parameters);
+        }
+        {
+            mv = cw.visitMethod(ACC_PUBLIC, "setIntArg",
+                    "(Ljava/lang/String;I)Lio/primeval/reflect/proxy/arguments/ArgumentsUpdater;", null, null);
+            generateArgSetterCode(int.class, mv, selfClassInternalName, selfClassDescriptor, parameters);
+        }
+        {
+            mv = cw.visitMethod(ACC_PUBLIC, "setShortArg",
+                    "(Ljava/lang/String;S)Lio/primeval/reflect/proxy/arguments/ArgumentsUpdater;", null, null);
+            generateArgSetterCode(short.class, mv, selfClassInternalName, selfClassDescriptor, parameters);
+        }
+        {
+            mv = cw.visitMethod(ACC_PUBLIC, "setLongArg",
+                    "(Ljava/lang/String;J)Lio/primeval/reflect/proxy/arguments/ArgumentsUpdater;", null, null);
+            generateArgSetterCode(long.class, mv, selfClassInternalName, selfClassDescriptor, parameters);
+        }
+        {
+            mv = cw.visitMethod(ACC_PUBLIC, "setByteArg",
+                    "(Ljava/lang/String;B)Lio/primeval/reflect/proxy/arguments/ArgumentsUpdater;", null, null);
+            generateArgSetterCode(byte.class, mv, selfClassInternalName, selfClassDescriptor, parameters);
+        }
+        {
+            mv = cw.visitMethod(ACC_PUBLIC, "setBooleanArg",
+                    "(Ljava/lang/String;Z)Lio/primeval/reflect/proxy/arguments/ArgumentsUpdater;", null, null);
+            generateArgSetterCode(boolean.class, mv, selfClassInternalName, selfClassDescriptor, parameters);
+        }
+        {
+            mv = cw.visitMethod(ACC_PUBLIC, "setFloatArg",
+                    "(Ljava/lang/String;F)Lio/primeval/reflect/proxy/arguments/ArgumentsUpdater;", null, null);
+            generateArgSetterCode(float.class, mv, selfClassInternalName, selfClassDescriptor, parameters);
+        }
+        {
+            mv = cw.visitMethod(ACC_PUBLIC, "setDoubleArg",
+                    "(Ljava/lang/String;D)Lio/primeval/reflect/proxy/arguments/ArgumentsUpdater;", null, null);
+            generateArgSetterCode(double.class, mv, selfClassInternalName, selfClassDescriptor, parameters);
+        }
+        {
+            mv = cw.visitMethod(ACC_PUBLIC, "setCharArg",
+                    "(Ljava/lang/String;C)Lio/primeval/reflect/proxy/arguments/ArgumentsUpdater;", null, null);
+            generateArgSetterCode(char.class, mv, selfClassInternalName, selfClassDescriptor, parameters);
+        }
+    }
+
+    private static void generateArgSetterCode(Class<?> argType, MethodVisitor mv, String selfClassInternalName, String selfClassDescriptor,
+            Parameter[] parameters) {
+        Parameter[] matchingParams = Stream.of(parameters).filter(c -> argType.isAssignableFrom(c.getType())).toArray(Parameter[]::new);
+        mv.visitParameter("argName", 0);
+        mv.visitParameter("newValue", 0);
+        mv.visitCode();
+        Label first = new Label();
+        Label nextLabel = first;
+        for (int i = 0; i < matchingParams.length; i++) {
+            Parameter parameter = matchingParams[i];
+            mv.visitLabel(nextLabel);
+            if (i > 0) {
+                mv.visitFrame(Opcodes.F_SAME, 0, null, 0, null);
+            }
+            mv.visitVarInsn(ALOAD, 1);
+            mv.visitLdcInsn(parameter.getName());
+            mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/String", "equals", "(Ljava/lang/Object;)Z", false);
+            nextLabel = new Label();
+            mv.visitJumpInsn(IFEQ, nextLabel);
+            Label l2 = new Label();
+            mv.visitLabel(l2);
+            Class<?> paramType = parameter.getType();
+            mv.visitVarInsn(ALOAD, 0); // this
+            mv.visitVarInsn(getLoadCode(argType), 2);
+            if (Object.class == argType) {
+                mv.visitTypeInsn(CHECKCAST, Type.getInternalName(paramType));
+            }
+            mv.visitFieldInsn(PUTFIELD, selfClassInternalName, parameter.getName(), Type.getDescriptor(paramType));
+            mv.visitVarInsn(ALOAD, 0);
+            mv.visitInsn(ARETURN);
+        }
+        // final else
+        mv.visitLabel(nextLabel);
+        if (matchingParams.length > 0) {
+            mv.visitFrame(Opcodes.F_SAME, 0, null, 0, null);
+        }
+        genExceptionThrowForUnknownParam(argType.getSimpleName(), mv);
+        Label last = new Label();
+        mv.visitLabel(last);
+        mv.visitLocalVariable("this", selfClassDescriptor, null, first, last, 0);
+        mv.visitLocalVariable("argName", "Ljava/lang/String;", null, first, last, 1);
+        mv.visitLocalVariable("newValue", Type.getDescriptor(argType), argType == Object.class ? "TT;" : null, first, last, 2);
+        mv.visitMaxs(-1, -1);
         mv.visitEnd();
     }
 
@@ -427,7 +526,7 @@ public final class ProxyClassMethodArgsGenerator implements Opcodes {
         mv.visitLocalVariable("this", selfClassDescriptor, null, first, last, 0);
         mv.visitLocalVariable("argName", "Ljava/lang/String;", null, first, last, 1);
 
-        mv.visitMaxs(5, 2);
+        mv.visitMaxs(-1, -1);
         mv.visitEnd();
     }
 
@@ -444,14 +543,5 @@ public final class ProxyClassMethodArgsGenerator implements Opcodes {
         mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/StringBuilder", "toString", "()Ljava/lang/String;", false);
         mv.visitMethodInsn(INVOKESPECIAL, "java/lang/IllegalArgumentException", "<init>", "(Ljava/lang/String;)V", false);
         mv.visitInsn(ATHROW);
-    }
-
-    private static String makeSelfClassDescriptor(String wovenClassDescriptor, String suffix) {
-        StringBuilder buf = new StringBuilder();
-        buf.append(wovenClassDescriptor, 0, wovenClassDescriptor.length() - 1); // omit
-                                                                                // ';'
-        buf.append(suffix);
-        buf.append(';');
-        return buf.toString();
     }
 }

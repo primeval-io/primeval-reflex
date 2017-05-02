@@ -1,4 +1,4 @@
-package io.primeval.reflect.proxy;
+package io.primeval.reflect.proxy.bytecode;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -20,6 +20,8 @@ import org.assertj.core.util.Lists;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import io.primeval.reflect.proxy.CallContext;
+import io.primeval.reflect.proxy.Interceptor;
 import io.primeval.reflect.proxy.arguments.Arguments;
 import io.primeval.reflect.proxy.bytecode.ProxyClassLoader;
 import io.primeval.reflect.proxy.bytecode.shared.Proxy;

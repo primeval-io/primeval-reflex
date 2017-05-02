@@ -10,17 +10,17 @@ public final class TheoreticalDelegate implements Goodbye, Hello, Stuff {
 
     @Override
     public double foo(double a, int[] b) {
-        return 0;
+        return a + b[0];
     }
 
     @Override
     public String hello() {
-        return null;
+        return "hello";
     }
 
     @Override
     public String goodbye() {
-        return null;
+        return "goodbye";
     }
 
 }

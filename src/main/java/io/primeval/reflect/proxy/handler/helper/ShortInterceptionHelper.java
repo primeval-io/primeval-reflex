@@ -9,6 +9,7 @@ public final class ShortInterceptionHelper extends InterceptionHelper {
     private final ShortInterceptionHandler handler;
 
     public ShortInterceptionHelper(CallContext context, ShortInterceptionHandler handler) {
+        super(handler);
         this.handler = handler;
     }
 

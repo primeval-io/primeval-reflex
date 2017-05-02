@@ -9,7 +9,7 @@ import io.primeval.reflect.proxy.handler.LongInterceptionHandler;
 
 public final class CompositeLongInterceptors {
 
-    public static <T, E extends Throwable> long call(int interceptorId, Interceptor[] interceptors,
+    public static <E extends Throwable> long call(int interceptorId, Interceptor[] interceptors,
             CallContext context,
             Arguments currentArguments,
             ToLongFunction<Arguments> terminalInvokeFun) throws E {

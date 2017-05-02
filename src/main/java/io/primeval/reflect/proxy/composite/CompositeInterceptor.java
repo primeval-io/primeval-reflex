@@ -46,52 +46,62 @@ final class CompositeInterceptor implements Interceptor {
 
     @Override
     public <T, E extends Throwable> T onCall(CallContext context, ObjectInterceptionHandler<T> handler) throws E {
-        return CompositeObjectInterceptors.call(0, interceptors, context, handler.getArguments(), handler::invoke);
+        return CompositeObjectInterceptors.<T, RuntimeException> call(0, interceptors, context, handler.getArguments(),
+                handler::invoke);
     }
 
     @Override
     public <E extends Throwable> void onCall(CallContext context, VoidInterceptionHandler handler) throws E {
-        CompositeVoidInterceptors.call(0, interceptors, context, handler.getArguments(), handler::invoke);
+        CompositeVoidInterceptors.<RuntimeException> call(0, interceptors, context, handler.getArguments(),
+                handler::invoke);
     }
 
     @Override
     public <E extends Throwable> int onCall(CallContext context, IntInterceptionHandler handler) throws E {
-        return CompositeIntInterceptors.call(0, interceptors, context, handler.getArguments(), handler::invoke);
+        return CompositeIntInterceptors.<RuntimeException> call(0, interceptors, context, handler.getArguments(),
+                handler::invoke);
     }
 
     @Override
     public <E extends Throwable> byte onCall(CallContext context, ByteInterceptionHandler handler) throws E {
-        return CompositeByteInterceptors.call(0, interceptors, context, handler.getArguments(), handler::invoke);
+        return CompositeByteInterceptors.<RuntimeException> call(0, interceptors, context, handler.getArguments(),
+                handler::invoke);
     }
 
     @Override
     public <E extends Throwable> boolean onCall(CallContext context, BooleanInterceptionHandler handler) throws E {
-        return CompositeBooleanInterceptors.call(0, interceptors, context, handler.getArguments(), handler::invoke);
+        return CompositeBooleanInterceptors.<RuntimeException> call(0, interceptors, context, handler.getArguments(),
+                handler::invoke);
     }
 
     @Override
     public <E extends Throwable> short onCall(CallContext context, ShortInterceptionHandler handler) throws E {
-        return CompositeShortInterceptors.call(0, interceptors, context, handler.getArguments(), handler::invoke);
+        return CompositeShortInterceptors.<RuntimeException> call(0, interceptors, context, handler.getArguments(),
+                handler::invoke);
     }
 
     @Override
     public <E extends Throwable> char onCall(CallContext context, CharInterceptionHandler handler) throws E {
-        return CompositeCharInterceptors.call(0, interceptors, context, handler.getArguments(), handler::invoke);
+        return CompositeCharInterceptors.<RuntimeException> call(0, interceptors, context, handler.getArguments(),
+                handler::invoke);
     }
 
     @Override
     public <E extends Throwable> double onCall(CallContext context, DoubleInterceptionHandler handler) throws E {
-        return CompositeDoubleInterceptors.call(0, interceptors, context, handler.getArguments(), handler::invoke);
+        return CompositeDoubleInterceptors.<RuntimeException> call(0, interceptors, context, handler.getArguments(),
+                handler::invoke);
     }
 
     @Override
     public <E extends Throwable> float onCall(CallContext context, FloatInterceptionHandler handler) throws E {
-        return CompositeFloatInterceptors.call(0, interceptors, context, handler.getArguments(), handler::invoke);
+        return CompositeFloatInterceptors.<RuntimeException> call(0, interceptors, context, handler.getArguments(),
+                handler::invoke);
     }
 
     @Override
     public <E extends Throwable> long onCall(CallContext context, LongInterceptionHandler handler) throws E {
-        return CompositeLongInterceptors.call(0, interceptors, context, handler.getArguments(), handler::invoke);
+        return CompositeLongInterceptors.<RuntimeException> call(0, interceptors, context, handler.getArguments(),
+                handler::invoke);
     }
 
 }

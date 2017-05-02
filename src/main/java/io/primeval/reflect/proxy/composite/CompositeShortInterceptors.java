@@ -12,7 +12,7 @@ public final class CompositeShortInterceptors {
         short applyAsShort(A a);
     }
 
-    public static <T, E extends Throwable> short call(int interceptorId, Interceptor[] interceptors,
+    public static <E extends Throwable> short call(int interceptorId, Interceptor[] interceptors,
             CallContext context,
             Arguments currentArguments,
             ToShortFunction<Arguments> terminalInvokeFun) throws E {

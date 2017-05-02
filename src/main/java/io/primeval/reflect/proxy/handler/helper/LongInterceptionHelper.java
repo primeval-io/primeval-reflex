@@ -9,6 +9,7 @@ public final class LongInterceptionHelper extends InterceptionHelper {
     private final LongInterceptionHandler handler;
 
     public LongInterceptionHelper(CallContext context, LongInterceptionHandler handler) {
+        super(handler);
         this.handler = handler;
     }
 

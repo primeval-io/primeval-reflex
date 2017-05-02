@@ -9,6 +9,7 @@ public final class FloatInterceptionHelper extends InterceptionHelper {
     private final FloatInterceptionHandler handler;
 
     public FloatInterceptionHelper(CallContext context, FloatInterceptionHandler handler) {
+        super(handler);
         this.handler = handler;
     }
 

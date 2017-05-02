@@ -9,6 +9,7 @@ public final class DoubleInterceptionHelper extends InterceptionHelper {
     private final DoubleInterceptionHandler handler;
 
     public DoubleInterceptionHelper(CallContext context, DoubleInterceptionHandler handler) {
+        super(handler);
         this.handler = handler;
     }
 

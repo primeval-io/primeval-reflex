@@ -23,8 +23,8 @@ public final class ProxyClassLoader extends ClassLoader {
     public void declareClassToProxy(Class<?> clazzToProxy, Class<?>[] interfaces, Method[] methods,
             Predicate<Method> shouldIntercept) {
         if (managedClasses.add(clazzToProxy)) {
-            String proxyClassName = ProxyClassGenerator.getName(clazzToProxy);
-            classesToProxy.put(proxyClassName,
+            String classToProxyName = ProxyClassGenerator.getName(clazzToProxy);
+            classesToProxy.put(classToProxyName,
                     () -> trust(() -> ProxyClassGenerator.create(clazzToProxy, interfaces, methods, shouldIntercept)));
             for (int methodId = 0; methodId < methods.length; methodId++) {
                 Method m = methods[methodId];
@@ -32,14 +32,22 @@ public final class ProxyClassLoader extends ClassLoader {
                     continue;
                 }
                 int methId = methodId;
-                String methodArgName = ProxyClassMethodArgsGenerator.getName(clazzToProxy, m, methodId);
+                String methodArgName = MethodArgumentsGenerator.getName(clazzToProxy, m, methodId);
                 classesToProxy.put(methodArgName,
-                        () -> trust(() -> ProxyClassMethodArgsGenerator.generateMethodArgs(clazzToProxy, m, methId)));
+                        () -> trust(() -> MethodArgumentsGenerator.generateMethodArgs(clazzToProxy, m, methId)));
 
-                String methodArgUpdaterName = ProxyClassArgsUpdaterGenerator.getName(clazzToProxy, m, methodId);
+                String methodArgUpdaterName = MethodArgumentssUpdaterGenerator.getName(clazzToProxy, m, methodId);
                 classesToProxy.put(methodArgUpdaterName,
-                        () -> trust(() -> ProxyClassArgsUpdaterGenerator.generateMethodArgsUpdater(clazzToProxy, m,
+                        () -> trust(() -> MethodArgumentssUpdaterGenerator.generateMethodArgsUpdater(clazzToProxy, m,
                                 methId)));
+
+                String methodInterceptionHandlerName = InterceptionHandlerGenerator.getName(
+                        clazzToProxy, m,
+                        methodId);
+                classesToProxy.put(methodInterceptionHandlerName,
+                        () -> trust(() -> InterceptionHandlerGenerator
+                                .generateMethodInterceptionHandler(clazzToProxy, m,
+                                        methId)));
             }
         }
     }

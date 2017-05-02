@@ -12,7 +12,7 @@ public final class CompositeCharInterceptors {
         char applyAsChar(A a);
     }
 
-    public static <T, E extends Throwable> char call(int interceptorId, Interceptor[] interceptors, CallContext context,
+    public static <E extends Throwable> char call(int interceptorId, Interceptor[] interceptors, CallContext context,
             Arguments currentArguments,
             ToCharFunction<Arguments> terminalInvokeFun) throws E {
         Interceptor interceptor = interceptors[interceptorId];

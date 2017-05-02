@@ -14,9 +14,17 @@ import io.primeval.reflect.proxy.handler.VoidInterceptionHandler;
 
 public abstract class InterceptionHelper {
 
-    protected Arguments arguments = argumentsProvider().getArguments();
+    protected final ArgumentsProvider argumentsProvider;
+    protected Arguments arguments;
 
-    protected abstract ArgumentsProvider argumentsProvider();
+    public InterceptionHelper(ArgumentsProvider argumentsProvider) {
+        this.argumentsProvider = argumentsProvider;
+        this.arguments = argumentsProvider.getArguments();
+    }
+
+    protected ArgumentsProvider argumentsProvider() {
+        return argumentsProvider;
+    }
 
     public Arguments getCurrentArguments() {
         return arguments;
@@ -28,7 +36,6 @@ public abstract class InterceptionHelper {
 
     public static <T> ObjectInterceptionHelper<T> create(CallContext context, ObjectInterceptionHandler<T> handler) {
         return new ObjectInterceptionHelper<>(context, handler);
-
     }
 
     public static IntInterceptionHelper create(CallContext context, IntInterceptionHandler handler) {

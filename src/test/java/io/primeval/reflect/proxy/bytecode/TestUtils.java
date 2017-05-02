@@ -1,4 +1,4 @@
-package io.primeval.reflect.proxy;
+package io.primeval.reflect.proxy.bytecode;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;

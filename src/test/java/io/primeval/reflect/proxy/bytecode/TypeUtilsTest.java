@@ -1,4 +1,4 @@
-package io.primeval.reflect.proxy;
+package io.primeval.reflect.proxy.bytecode;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -21,9 +21,7 @@ public class TypeUtilsTest {
     public void shouldGetGenericSignature() {
         String actual = TypeUtils.getTypeSignature(GenericService.class);
 
-        String expected = "Ljava/lang/Object;"
-                + "Lio/primeval/aspecio/internal/weaving/testset/api/GenericInterface"
-                + "<Ljava/lang/Object;Ljava/lang/String;>;";
+        String expected = "Ljava/lang/Object;Lio/primeval/reflect/proxy/testset/api/GenericInterface<Ljava/lang/Object;Ljava/lang/String;>;";
 
         assertThat(actual).isEqualTo(expected);
     }

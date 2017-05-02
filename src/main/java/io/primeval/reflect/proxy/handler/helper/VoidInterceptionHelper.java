@@ -9,6 +9,7 @@ public final class VoidInterceptionHelper extends InterceptionHelper {
     private final VoidInterceptionHandler handler;
 
     public VoidInterceptionHelper(CallContext context, VoidInterceptionHandler handler) {
+        super(handler);
         this.handler = handler;
     }
 

@@ -9,6 +9,17 @@ import java.util.concurrent.Callable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.primeval.reflect.proxy.handler.BooleanInterceptionHandler;
+import io.primeval.reflect.proxy.handler.ByteInterceptionHandler;
+import io.primeval.reflect.proxy.handler.CharInterceptionHandler;
+import io.primeval.reflect.proxy.handler.DoubleInterceptionHandler;
+import io.primeval.reflect.proxy.handler.FloatInterceptionHandler;
+import io.primeval.reflect.proxy.handler.IntInterceptionHandler;
+import io.primeval.reflect.proxy.handler.LongInterceptionHandler;
+import io.primeval.reflect.proxy.handler.ObjectInterceptionHandler;
+import io.primeval.reflect.proxy.handler.ShortInterceptionHandler;
+import io.primeval.reflect.proxy.handler.VoidInterceptionHandler;
+
 public final class ReflectUtils {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ReflectUtils.class);
@@ -85,5 +96,43 @@ public final class ReflectUtils {
         copy.addAll(source);
         return copy;
     }
+    
+    static Class<?> getInterceptionHandlerClass(Class<?> returnType) {
+        if (returnType == void.class) {
+            return VoidInterceptionHandler.class;
+        } else if (returnType == int.class) {
+            return IntInterceptionHandler.class;
+        } else if (returnType == short.class) {
+            return ShortInterceptionHandler.class;
+        } else if (returnType == double.class) {
+            return DoubleInterceptionHandler.class;
+        } else if (returnType == float.class) {
+            return FloatInterceptionHandler.class;
+        } else if (returnType == char.class) {
+            return CharInterceptionHandler.class;
+        } else if (returnType == long.class) {
+            return LongInterceptionHandler.class;
+        } else if (returnType == byte.class) {
+            return ByteInterceptionHandler.class;
+        } else if (returnType == boolean.class) {
+            return BooleanInterceptionHandler.class;
+        } else {
+            return ObjectInterceptionHandler.class;
+        }
+    }
+    
+    static String makeSuffixClassDescriptor(String classToProxyDescriptor, String suffix) {
+        StringBuilder buf = new StringBuilder();
+        buf.append(classToProxyDescriptor, 0, classToProxyDescriptor.length() - 1); // omit
+                                                                                // ';'
+        buf.append(suffix);
+        buf.append(';');
+        return buf.toString();
+    }
 
+    static String nullToEmpty(String argsClassDescriptor) {
+        if (argsClassDescriptor == null)
+            return "";
+        return argsClassDescriptor;
+    }
 }

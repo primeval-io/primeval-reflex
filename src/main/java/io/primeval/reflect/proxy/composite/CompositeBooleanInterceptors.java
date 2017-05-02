@@ -9,7 +9,7 @@ import io.primeval.reflect.proxy.handler.BooleanInterceptionHandler;
 
 public final class CompositeBooleanInterceptors {
 
-    public static <T, E extends Throwable> boolean call(int interceptorId, Interceptor[] interceptors,
+    public static <E extends Throwable> boolean call(int interceptorId, Interceptor[] interceptors,
             CallContext context,
             Arguments currentArguments,
             Predicate<Arguments> terminalInvokeFun) throws E {

@@ -9,6 +9,7 @@ public final class IntInterceptionHelper extends InterceptionHelper {
     private final IntInterceptionHandler handler;
 
     public IntInterceptionHelper(CallContext context, IntInterceptionHandler handler) {
+        super(handler);
         this.handler = handler;
     }
 
