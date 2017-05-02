@@ -3,11 +3,11 @@ package io.primeval.reflect.proxy.theory;
 import io.primeval.reflect.proxy.arguments.Arguments;
 import io.primeval.reflect.proxy.handler.ObjectInterceptionHandler;
 
-public final class M0ObjectInterceptionHandler implements ObjectInterceptionHandler<String> {
+public final class M0InterceptionHandler implements ObjectInterceptionHandler<String> {
 
     private final TheoreticalDelegate delegate;
 
-    public M0ObjectInterceptionHandler(TheoreticalDelegate delegate) {
+    public M0InterceptionHandler(TheoreticalDelegate delegate) {
         this.delegate = delegate;
     }
 

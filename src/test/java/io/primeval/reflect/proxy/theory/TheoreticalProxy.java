@@ -8,8 +8,6 @@ import io.primeval.reflect.proxy.CallContext;
 import io.primeval.reflect.proxy.arguments.Arguments;
 import io.primeval.reflect.proxy.bytecode.shared.Proxy;
 import io.primeval.reflect.proxy.bytecode.shared.ProxyUtils;
-import io.primeval.reflect.proxy.handler.DoubleInterceptionHandler;
-import io.primeval.reflect.proxy.handler.VoidInterceptionHandler;
 
 public final class TheoreticalProxy extends Proxy implements Hello, Goodbye, Stuff {
 
@@ -30,11 +28,11 @@ public final class TheoreticalProxy extends Proxy implements Hello, Goodbye, Stu
             Arrays.asList(meth2.getParameters()));
 
     private final TheoreticalDelegate delegate;
-    private final M0ObjectInterceptionHandler handler0;
+    private final M0InterceptionHandler handler0;
 
     public TheoreticalProxy(TheoreticalDelegate delegate) {
         this.delegate = delegate;
-        this.handler0 = new M0ObjectInterceptionHandler(delegate);
+        this.handler0 = new M0InterceptionHandler(delegate);
     }
 
     @Override
@@ -44,51 +42,12 @@ public final class TheoreticalProxy extends Proxy implements Hello, Goodbye, Stu
 
     @Override
     public void test(PrintStream ps, int i, byte b, String s) {
-        interceptor.onCall(cc1, new VoidInterceptionHandler() {
-            Arguments args = null;
-
-            @Override
-            public Arguments getArguments() {
-                if (args == null) {
-                    args = new M1Args(cc1.parameters, ps, i, b, s);
-                }
-                return args;
-            }
-
-            @Override
-            public void invoke() {
-                delegate.test(ps, i, b, s);
-            }
-
-            @Override
-            public void invoke(Arguments arguments) {
-                delegate.test(ps, i, b, s); // fixed
-            }
-        });
-
+        interceptor.onCall(cc1, new M1InterceptionHandler(delegate, new M1Args(cc1.parameters, ps, i, b, s)));
     }
 
     @Override
     public double foo(double a, int[] b) {
-        return interceptor.onCall(cc2, new DoubleInterceptionHandler() {
-
-            @Override
-            public Arguments getArguments() {
-                return Arguments.EMPTY_ARGUMENTS;
-            }
-
-            @Override
-            public double invoke() throws Exception {
-                return delegate.foo(a, b);
-            }
-
-            @Override
-            public double invoke(Arguments arguments) throws Exception {
-                return delegate.foo(a, b);
-            }
-
-        });
-
+        return interceptor.onCall(cc2, new M2InterceptionHandler(delegate, Arguments.EMPTY_ARGUMENTS));
     }
 
     @Override
