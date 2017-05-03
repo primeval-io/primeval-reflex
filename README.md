@@ -1,4 +1,4 @@
-# primeval-reflect [![Build Status](https://travis-ci.org/primeval-io/primeval-reflect.svg?branch=master)](https://travis-ci.org/primeval-io/primeval-reflect) 
+# primeval-reflect [![Build Status](https://travis-ci.org/primeval-io/primeval-reflect.svg?branch=master)](https://travis-ci.org/primeval-io/primeval-reflect) [![Gitter primeval-io/Lobby](https://badges.gitter.im/primeval-io/Lobby.svg)](https://gitter.im/primeval-io/Lobby)
 
 primeval-reflect is a Java reflection library, currently providing an improved JDK Proxy. Additional utilities might be added later. It is OSGi compatible, but it can be used within any Java application.
 
@@ -41,15 +41,16 @@ primeval-reflects requires Java 8 and depends on the SLF4J logging API and the A
   * All public methods not from `java.lang.Object` are proxied;
   * Simple yet extensive Interception API;
   * Intercepted Arguments are immutable and cacheable thanks to implementations of `Object#equals` and `Object#hashCode`.
+  * Easy to debug: anything that can be written efficiently in plain Java is; code generation is limited to proxies, arguments and interception callbacks (`InterceptionHandler`). The three of them correspond to very straightforward Java code that is documented (see `TheoreticalProxy` in tests to see what a manually written proxy looks like for a known-class).
 * __Framework-friendly:__
-  * Annotations are proxied, so framework can introspect them;
+  * Annotations are proxied, so frameworks can introspect them;
   * Same goes for generic signatures!
   * And method parameter names (from Java 8's `javac -parameters` option, or synthetic parameter names); 
   * Just a library that will integrate in any Java application.
 * __Fast:__ 
   * Generated classes are minimal;
   * Class generation is done using ASM core library only to avoid any overhead ; 
-  * Primitive types are not boxed, but Interceptors have default methods to box primitives to make righting interceptors quickly less tedious;
+  * Primitive types are not boxed, but Interceptors have default methods to box primitives to make writing interceptors quickly less tedious;
   * Simple API to decide which methods are intercepted; those which are not are directly delegated with almost zero overhead.
 * __Versatile:__
   * Interceptors can do whatever they like, included retrying after an exception, delaying the call, block, etc
@@ -99,7 +100,7 @@ We can proxy it this way.
 
 This prints `Hello world`. The call was successfully proxied, but we did not intercept it. Primeval-Reflect proxies support a dynamic change of interceptors, and are always created with the `Interceptor.DEFAULT` interceptor, that simply delegates the original call.
 
-To set an interceptor, we first have to create one. Let us make one add an exclamation mark (!) at the end of the returned message. Normally, interceptors are very generic, but for the sake of the demo we will expect the method we intercept returns a `String`. Keep in mind that the same interceptor will be called for _all_ intercepted methods (by default, all of the proxy's methods that are not inherited of `java.lang.Object`).
+To set an interceptor, we first have to create one. Let us make one that adds an exclamation mark (!) at the end of the returned `String`. Normally, interceptors are very generic, but for the sake of the demo we will expect the method we intercept returns a `String`. Keep in mind that the same interceptor will be called for _all_ intercepted methods (by default, all of the proxy's methods that are not inherited of `java.lang.Object`).
 
 ```java
 
@@ -124,7 +125,7 @@ To set an interceptor, we first have to create one. Let us make one add an excla
 
 ```
 
-This prints `Hello world!`. This showed how to change a result. We could also decide not to call `handler.invoke()` at all, or call it several times. It's up to us! Now, what if we wanted to change the arguments? We can create another interceptor for this:
+This prints `Hello world!`. This showed how to change a result. We could also decide not to call `handler.invoke()` at all, or call it several times. It's up to us! Now, what if we wanted to change the arguments? We can create another interceptor for that purpose:
 
 ```java
 
@@ -151,7 +152,7 @@ This prints `Hello world!`. This showed how to change a result. We could also de
 	System.out.println(helloMsg);
 ```
 
-Now, this printed `Hello world^Wuniverse`. When we want to change arguments, even though we can implement our own class implementing `Arguments`, it is better (and faster for the proxies!) to use the fluent `Argument#udpdate()` API. Arguments are always matched with their name, but when using arguments built by the library, they convert to final fields, and the `invoke(Arguments)` method will directly get those fields. If you don't change arguments at all, it is even slightly faster to call the `invoke()` method that won't check if it's the fast generated class.
+Now, this printed `Hello world^Wuniverse`. When we want to change arguments, even though we can implement our own class implementing `Arguments`, it is better (and faster for the proxies!) to use the fluent `Argument#udpdate()` API. Arguments are always matched with their name, but when using arguments built by the library, they convert to final fields, and the `invoke(Arguments)` method will directly get those fields. If you don't change arguments at all, it is even slightly faster to call the parameter-less `invoke()` method which doesn't have to check if it's the faster generated class.
 
 So far so good! In case of exceptions we could simply use `try`/`catch`/`finally` blocks around `handler.invoke()`. We could throw at any time. 
 
@@ -159,13 +160,13 @@ What if we wanted our two interceptors to be active? Nothing's easier ;)
 
 ```java 	
 	Interceptor composedInterceptor = Interceptors.compose(universeInterceptor, exclamationMarkInterceptor);
-	proxy.setInterceptor(exclamationMarkInterceptor);
+	proxy.setInterceptor(composedInterceptor);
 	
 	String helloMsg = helloProxy.getHello("world");
 	System.out.println(helloMsg);
 ```
 
-As expected, this printed `Hello world^Wuniverse!`. Composing interceptors stack them in the order you'd expect, and each of them has its full capabilities.
+As expected, this printed `Hello world^Wuniverse!`. Composing interceptors stacks them in the order you'd expect, and each of them has its full capabilities. For instance, if an interceptor up in the stack invokes the target method with modified arguments, further interceptors down the line will have these. If an interceptor down the stack throws an exception, interceptors up the stack will get it and possibly catch it. No surprises there, it _is_ an actual Java call-stack, and the code for this is not generated: it is plain Java you can follow with debugger and source code.
 
 
 # Dealing with primitive types
@@ -251,7 +252,7 @@ This prints `Goodbye!`.
 
 # Getting help
 
-Post a new GitHub issue or join on https://gitter.im/primeval-io/Lobby [![Gitter](https://badges.gitter.im/primeval-io/Lobby.svg)](https://gitter.im/primeval-io/Lobby).
+Post a new GitHub issue or join on [Gitter](https://gitter.im/primeval-io/Lobby).
  
 
 
@@ -261,4 +262,6 @@ primeval-reflect was developed by Simon Chemouil.
 
 # Copyright
 
-(c) 2016-2017, Simon Chemouil, Lambdacube, Primeval
+(c) 2016-2017, Simon Chemouil, Lambdacube
+
+primeval-reflect is part of the Primeval project.
