@@ -13,8 +13,8 @@ public interface BooleanInterceptionHandler extends ArgumentsProvider {
         return invoke(getArguments());
     }
 
-    default public ObjectInterceptionHandler<Boolean> boxed() {
-        return new ObjectInterceptionHandler<Boolean>() {
+    default public InterceptionHandler<Boolean> boxed() {
+        return new InterceptionHandler<Boolean>() {
 
             @Override
             public <E extends Throwable> Boolean invoke(Arguments arguments) throws E {

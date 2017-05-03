@@ -13,8 +13,8 @@ public interface DoubleInterceptionHandler extends ArgumentsProvider {
         return invoke(getArguments());
     }
 
-    default public ObjectInterceptionHandler<Double> boxed() {
-        return new ObjectInterceptionHandler<Double>() {
+    default public InterceptionHandler<Double> boxed() {
+        return new InterceptionHandler<Double>() {
 
             @Override
             public <E extends Throwable> Double invoke(Arguments arguments) throws E {

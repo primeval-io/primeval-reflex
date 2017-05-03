@@ -3,9 +3,9 @@ package io.primeval.reflect.proxy.shared;
 import java.lang.reflect.Method;
 
 // Class meant to be used *from* the proxy classes.
-public final class ProxyUtils {
+public final class SharedProxyUtils {
 
-    private ProxyUtils() {
+    private SharedProxyUtils() {
     }
 
     public static Method getMethodUnchecked(Class<?> clazz, String methodName, Class<?>... params) {

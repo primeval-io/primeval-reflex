@@ -1,9 +1,9 @@
-package io.primeval.reflect.proxy.bytecode;
+package io.primeval.reflect.proxy.bytecode.gen;
 
-import static io.primeval.reflect.proxy.bytecode.TypeUtils.IRETURN_TYPES;
-import static io.primeval.reflect.proxy.bytecode.TypeUtils.getLoadCode;
-import static io.primeval.reflect.proxy.bytecode.TypeUtils.getReturnCode;
-import static io.primeval.reflect.proxy.bytecode.TypeUtils.getTypeSize;
+import static io.primeval.reflect.proxy.bytecode.gen.BytecodeGenUtils.IRETURN_TYPES;
+import static io.primeval.reflect.proxy.bytecode.gen.BytecodeGenUtils.getLoadCode;
+import static io.primeval.reflect.proxy.bytecode.gen.BytecodeGenUtils.getReturnCode;
+import static io.primeval.reflect.proxy.bytecode.gen.BytecodeGenUtils.getTypeSize;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
@@ -35,7 +35,7 @@ public final class MethodArgumentsGenerator implements Opcodes {
 
         String suffix = SUFFIX_START + method.getName() + methodId;
         String selfClassInternalName = classToProxyInternalName + suffix;
-        String selfClassDescriptor = ReflectUtils.makeSuffixClassDescriptor(classToProxyDescriptor, suffix);
+        String selfClassDescriptor = BytecodeGenUtils.makeSuffixClassDescriptor(classToProxyDescriptor, suffix);
 
         String updaterClassInternalName = classToProxyInternalName + MethodArgumentssUpdaterGenerator.SUFFIX_START + method.getName() + methodId;
 
@@ -173,7 +173,7 @@ public final class MethodArgumentsGenerator implements Opcodes {
             Type typeType = Type.getType(type);
             mv.visitFieldInsn(GETFIELD, selfClassInternalName, param.getName(), typeType.getDescriptor());
             if (type.isPrimitive()) {
-                Class<?> boxed = TypeUtils.getBoxed(type);
+                Class<?> boxed = BytecodeGenUtils.getBoxed(type);
                 mv.visitMethodInsn(INVOKESTATIC, Type.getInternalName(boxed), "hashCode",
                         Type.getMethodDescriptor(Type.INT_TYPE, typeType), false);
 

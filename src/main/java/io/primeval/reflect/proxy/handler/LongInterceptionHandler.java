@@ -13,8 +13,8 @@ public interface LongInterceptionHandler extends ArgumentsProvider {
         return invoke(getArguments());
     }
 
-    default public ObjectInterceptionHandler<Long> boxed() {
-        return new ObjectInterceptionHandler<Long>() {
+    default public InterceptionHandler<Long> boxed() {
+        return new InterceptionHandler<Long>() {
 
             @Override
             public <E extends Throwable> Long invoke(Arguments arguments) throws E {

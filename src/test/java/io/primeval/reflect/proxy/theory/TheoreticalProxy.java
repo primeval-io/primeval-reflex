@@ -5,22 +5,22 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 
 import io.primeval.reflect.proxy.CallContext;
-import io.primeval.reflect.proxy.shared.Proxy;
-import io.primeval.reflect.proxy.shared.ProxyUtils;
+import io.primeval.reflect.proxy.bytecode.Proxy;
+import io.primeval.reflect.proxy.shared.SharedProxyUtils;
 
 public final class TheoreticalProxy extends Proxy implements Hello, Goodbye, Stuff {
 
-    private final static Method meth0 = ProxyUtils.getMethodUnchecked(TheoreticalDelegate.class, "hello");
+    private final static Method meth0 = SharedProxyUtils.getMethodUnchecked(TheoreticalDelegate.class, "hello");
     private final static CallContext cc0 = new CallContext(TheoreticalDelegate.class, meth0,
             Arrays.asList(meth0.getParameters()));
 
-    private final static Method meth1 = ProxyUtils.getMethodUnchecked(TheoreticalDelegate.class, "test",
+    private final static Method meth1 = SharedProxyUtils.getMethodUnchecked(TheoreticalDelegate.class, "test",
             PrintStream.class, int.class,
             byte.class, String.class);
     private final static CallContext cc1 = new CallContext(TheoreticalDelegate.class, meth1,
             Arrays.asList(meth1.getParameters()));
 
-    private final static Method meth2 = ProxyUtils.getMethodUnchecked(TheoreticalDelegate.class, "foo", double.class,
+    private final static Method meth2 = SharedProxyUtils.getMethodUnchecked(TheoreticalDelegate.class, "foo", double.class,
             int[].class,
             byte.class, String.class);
     private final static CallContext cc2 = new CallContext(TheoreticalDelegate.class, meth2,

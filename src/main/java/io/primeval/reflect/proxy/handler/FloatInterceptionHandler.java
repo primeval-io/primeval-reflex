@@ -13,8 +13,8 @@ public interface FloatInterceptionHandler extends ArgumentsProvider {
         return invoke(getArguments());
     }
 
-    default public ObjectInterceptionHandler<Float> boxed() {
-        return new ObjectInterceptionHandler<Float>() {
+    default public InterceptionHandler<Float> boxed() {
+        return new InterceptionHandler<Float>() {
 
             @Override
             public <E extends Throwable> Float invoke(Arguments arguments) throws E {

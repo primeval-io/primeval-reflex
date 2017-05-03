@@ -3,7 +3,7 @@ package io.primeval.reflect.proxy.handler;
 import io.primeval.reflect.arguments.Arguments;
 import io.primeval.reflect.arguments.ArgumentsProvider;
 
-public interface ObjectInterceptionHandler<T> extends ArgumentsProvider {
+public interface InterceptionHandler<T> extends ArgumentsProvider {
 
     // Proceed with overridden arguments and return the normal value
     <E extends Throwable> T invoke(Arguments arguments) throws E;

@@ -13,8 +13,8 @@ public interface VoidInterceptionHandler extends ArgumentsProvider {
         invoke(getArguments());
     }
 
-    default public ObjectInterceptionHandler<Void> boxed() {
-        return new ObjectInterceptionHandler<Void>() {
+    default public InterceptionHandler<Void> boxed() {
+        return new InterceptionHandler<Void>() {
 
             @Override
             public <E extends Throwable> Void invoke(Arguments arguments) throws E {

@@ -1,9 +1,9 @@
-package io.primeval.reflect.proxy.bytecode;
+package io.primeval.reflect.proxy.bytecode.gen;
 
-import static io.primeval.reflect.proxy.bytecode.TypeUtils.getBoxed;
-import static io.primeval.reflect.proxy.bytecode.TypeUtils.getLoadCode;
-import static io.primeval.reflect.proxy.bytecode.TypeUtils.getReturnCode;
-import static io.primeval.reflect.proxy.bytecode.TypeUtils.getTypeSize;
+import static io.primeval.reflect.proxy.bytecode.gen.BytecodeGenUtils.getBoxed;
+import static io.primeval.reflect.proxy.bytecode.gen.BytecodeGenUtils.getLoadCode;
+import static io.primeval.reflect.proxy.bytecode.gen.BytecodeGenUtils.getReturnCode;
+import static io.primeval.reflect.proxy.bytecode.gen.BytecodeGenUtils.getTypeSize;
 import static org.objectweb.asm.Opcodes.AASTORE;
 import static org.objectweb.asm.Opcodes.ACC_FINAL;
 import static org.objectweb.asm.Opcodes.ACC_PRIVATE;
@@ -48,7 +48,8 @@ import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Type;
 
-import io.primeval.reflect.proxy.shared.Proxy;
+import io.primeval.reflect.proxy.bytecode.Proxy;
+import io.primeval.reflect.proxy.shared.SharedProxyUtils;
 
 public final class ProxyClassGenerator {
 
@@ -73,10 +74,9 @@ public final class ProxyClassGenerator {
         String selfClassDescriptor = makeTargetClassDescriptor(classToProxyDescriptor);
 
         Class<?> superclass = Proxy.class;
-        // String superClassDescriptor = Type.getDescriptor(superclass);
         String superClassInternalName = Type.getInternalName(superclass);
 
-        String typeSignature = TypeUtils.getTypeSignature(classToProxy);
+        String typeSignature = BytecodeGenUtils.getTypeSignature(classToProxy);
         String[] itfs = Stream.of(interfaces).map(Type::getInternalName).toArray(String[]::new);
         cw.visit(52, ACC_PUBLIC + ACC_FINAL + ACC_SUPER, selfClassInternalName, typeSignature,
                 superClassInternalName, itfs);
@@ -100,7 +100,8 @@ public final class ProxyClassGenerator {
 
             if (method.getParameterCount() == 0) {
                 String suffix = InterceptionHandlerGenerator.SUFFIX_START + method.getName() + i;
-                String interceptionHandlerDescriptor = ReflectUtils.makeSuffixClassDescriptor(classToProxyDescriptor,
+                String interceptionHandlerDescriptor = BytecodeGenUtils.makeSuffixClassDescriptor(
+                        classToProxyDescriptor,
                         suffix);
                 fv = cw.visitField(ACC_PRIVATE + ACC_FINAL, "handler" + i, interceptionHandlerDescriptor, null, null);
                 fv.visitEnd();
@@ -134,8 +135,8 @@ public final class ProxyClassGenerator {
                 addTypeSpecial(mv, type);
                 mv.visitInsn(AASTORE);
             }
-            mv.visitMethodInsn(INVOKESTATIC, "io/primeval/reflect/proxy/shared/ProxyUtils",
-                    "getMethodUnchecked",
+            String sharedProxyUtilsInternalName = Type.getInternalName(SharedProxyUtils.class);
+            mv.visitMethodInsn(INVOKESTATIC, sharedProxyUtilsInternalName, "getMethodUnchecked",
                     "(Ljava/lang/Class;Ljava/lang/String;[Ljava/lang/Class;)Ljava/lang/reflect/Method;", false);
             mv.visitFieldInsn(PUTSTATIC, selfClassInternalName, "meth" + i, "Ljava/lang/reflect/Method;");
             Label l1 = new Label();
@@ -184,7 +185,7 @@ public final class ProxyClassGenerator {
                     String suffix = InterceptionHandlerGenerator.SUFFIX_START + method.getName() + i;
                     String interceptionHandlerInternalName = classToProxyInternalName
                             + suffix;
-                    String interceptionHandlerDescriptor = ReflectUtils.makeSuffixClassDescriptor(
+                    String interceptionHandlerDescriptor = BytecodeGenUtils.makeSuffixClassDescriptor(
                             classToProxyDescriptor,
                             suffix);
                     Label l1b = new Label();
@@ -333,7 +334,7 @@ public final class ProxyClassGenerator {
             MethodVisitor mv, Method method, int methId) throws IllegalAccessException, InvocationTargetException {
         String methodDescriptor = Type.getMethodDescriptor(method);
         String methodName = method.getName();
-        String methodSignature = TypeUtils.getMethodSignature(method);
+        String methodSignature = BytecodeGenUtils.getMethodSignature(method);
 
         String[] exceptionTypes = null;
         Class<?>[] exceptionsClasses = method.getExceptionTypes();
@@ -377,7 +378,7 @@ public final class ProxyClassGenerator {
             Parameter param = parameters[i];
             Class<?> type = param.getType();
             mv.visitLocalVariable(param.getName(), Type.getDescriptor(type),
-                    TypeUtils.getDescriptorForJavaType(param.getParameterizedType()), l0, l1, paramIndices[i]);
+                    BytecodeGenUtils.getDescriptorForJavaType(param.getParameterizedType()), l0, l1, paramIndices[i]);
         }
         mv.visitMaxs(-1, -1);
         mv.visitEnd();
@@ -389,7 +390,7 @@ public final class ProxyClassGenerator {
             MethodVisitor mv, Method method, int methodId) throws IllegalAccessException, InvocationTargetException {
         String methodDescriptor = Type.getMethodDescriptor(method);
         String methodName = method.getName();
-        String methodSignature = TypeUtils.getMethodSignature(method);
+        String methodSignature = BytecodeGenUtils.getMethodSignature(method);
 
         String[] exceptionTypes = null;
         Class<?>[] exceptionsClasses = method.getExceptionTypes();
@@ -426,7 +427,7 @@ public final class ProxyClassGenerator {
         String suffix = InterceptionHandlerGenerator.SUFFIX_START + method.getName() + methodId;
 
         if (paramCount == 0) {
-            String interceptionHandlerDescriptor = ReflectUtils.makeSuffixClassDescriptor(
+            String interceptionHandlerDescriptor = BytecodeGenUtils.makeSuffixClassDescriptor(
                     classToProxyDescriptor,
                     suffix);
             mv.visitVarInsn(ALOAD, 0);
@@ -443,7 +444,7 @@ public final class ProxyClassGenerator {
             if (method.getParameterCount() > 0) {
                 String argsSuffix = "$argsFor$" + method.getName() + methodId;
                 argsClassInternalName = classToProxyInternalName + argsSuffix;
-                argsClassDescriptor = ReflectUtils.makeSuffixClassDescriptor(classToProxyDescriptor, argsSuffix);
+                argsClassDescriptor = BytecodeGenUtils.makeSuffixClassDescriptor(classToProxyDescriptor, argsSuffix);
                 mv.visitTypeInsn(NEW, argsClassInternalName);
                 mv.visitInsn(DUP);
                 mv.visitFieldInsn(GETSTATIC, selfClassInternalName, "cc" + methodId,
@@ -460,13 +461,13 @@ public final class ProxyClassGenerator {
             }
 
             mv.visitMethodInsn(INVOKESPECIAL, interceptionHandlerInternalName, "<init>",
-                    "(" + classToProxyDescriptor + ReflectUtils.nullToEmpty(argsClassDescriptor) + ")V",
+                    "(" + classToProxyDescriptor + BytecodeGenUtils.nullToEmpty(argsClassDescriptor) + ")V",
                     false);
         }
 
         Class<?> invokeReturnType = returnType.isPrimitive() ? returnType : Object.class;
         String invokeReturnTypeDescriptor = Type.getDescriptor(invokeReturnType);
-        Class<?> interceptionHandlerClass = ReflectUtils.getInterceptionHandlerClass(returnType);
+        Class<?> interceptionHandlerClass = BytecodeGenUtils.getInterceptionHandlerClass(returnType);
         String interceptionHandlerDescriptor = Type.getDescriptor(interceptionHandlerClass);
         mv.visitMethodInsn(INVOKEINTERFACE, "io/primeval/reflect/proxy/Interceptor", "onCall",
                 "(Lio/primeval/reflect/proxy/CallContext;" + interceptionHandlerDescriptor
@@ -483,7 +484,7 @@ public final class ProxyClassGenerator {
             Parameter param = parameters[i];
             Class<?> type = param.getType();
             mv.visitLocalVariable(param.getName(), Type.getDescriptor(type),
-                    TypeUtils.getDescriptorForJavaType(param.getParameterizedType()), l0, l1, paramIndices[i]);
+                    BytecodeGenUtils.getDescriptorForJavaType(param.getParameterizedType()), l0, l1, paramIndices[i]);
         }
         mv.visitMaxs(-1, -1);
         mv.visitEnd();

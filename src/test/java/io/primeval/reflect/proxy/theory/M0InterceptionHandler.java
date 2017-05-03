@@ -1,9 +1,9 @@
 package io.primeval.reflect.proxy.theory;
 
 import io.primeval.reflect.arguments.Arguments;
-import io.primeval.reflect.proxy.handler.ObjectInterceptionHandler;
+import io.primeval.reflect.proxy.handler.InterceptionHandler;
 
-public final class M0InterceptionHandler implements ObjectInterceptionHandler<String> {
+public final class M0InterceptionHandler implements InterceptionHandler<String> {
 
     private final TheoreticalDelegate delegate;
 

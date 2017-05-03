@@ -13,8 +13,8 @@ public interface CharInterceptionHandler extends ArgumentsProvider {
         return invoke(getArguments());
     }
 
-    default public ObjectInterceptionHandler<Character> boxed() {
-        return new ObjectInterceptionHandler<Character>() {
+    default public InterceptionHandler<Character> boxed() {
+        return new InterceptionHandler<Character>() {
 
             @Override
             public <E extends Throwable> Character invoke(Arguments arguments) throws E {

@@ -2,13 +2,13 @@ package io.primeval.reflect.proxy.handler.helper;
 
 import io.primeval.reflect.arguments.ArgumentsProvider;
 import io.primeval.reflect.proxy.CallContext;
-import io.primeval.reflect.proxy.handler.ObjectInterceptionHandler;
+import io.primeval.reflect.proxy.handler.InterceptionHandler;
 
 public final class ObjectInterceptionHelper<T> extends InterceptionHelper {
 
-    private final ObjectInterceptionHandler<T> handler;
+    private final InterceptionHandler<T> handler;
 
-    public ObjectInterceptionHelper(CallContext context, ObjectInterceptionHandler<T> handler) {
+    public ObjectInterceptionHelper(CallContext context, InterceptionHandler<T> handler) {
         super(handler);
         this.handler = handler;
     }

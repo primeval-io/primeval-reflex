@@ -9,11 +9,13 @@ import org.assertj.core.api.Assertions;
 import org.junit.Test;
 
 import io.primeval.reflect.arguments.Arguments;
+import io.primeval.reflect.proxy.bytecode.gen.InterceptionHandlerGenerator;
+import io.primeval.reflect.proxy.bytecode.gen.MethodArgumentsGenerator;
 import io.primeval.reflect.proxy.composite.ArgumentsMock;
 import io.primeval.reflect.proxy.handler.DoubleInterceptionHandler;
 import io.primeval.reflect.proxy.handler.IntInterceptionHandler;
-import io.primeval.reflect.proxy.handler.ObjectInterceptionHandler;
-import io.primeval.reflect.proxy.shared.ProxyUtils;
+import io.primeval.reflect.proxy.handler.InterceptionHandler;
+import io.primeval.reflect.proxy.shared.SharedProxyUtils;
 import io.primeval.reflect.proxy.testset.simpleservice.SimpleService;
 import io.primeval.reflect.proxy.theory.TheoreticalDelegate;
 
@@ -21,7 +23,7 @@ public class InterceptionHandlerGeneratorTest {
 
     @Test
     public void createObjectInterceptionHandlerForParameterlessMethod() throws Exception {
-        Method method = ProxyUtils.getMethodUnchecked(TheoreticalDelegate.class, "hello");
+        Method method = SharedProxyUtils.getMethodUnchecked(TheoreticalDelegate.class, "hello");
 
         String methodInterceptionHandlerClassName = InterceptionHandlerGenerator.getName(
                 TheoreticalDelegate.class,
@@ -39,7 +41,7 @@ public class InterceptionHandlerGeneratorTest {
         TheoreticalDelegate delegate = new TheoreticalDelegate();
 
         @SuppressWarnings("unchecked")
-        ObjectInterceptionHandler<String> helloMethodHandler = (ObjectInterceptionHandler<String>) genClass
+        InterceptionHandler<String> helloMethodHandler = (InterceptionHandler<String>) genClass
                 .getConstructor(TheoreticalDelegate.class)
                 .newInstance(delegate);
 
@@ -49,7 +51,7 @@ public class InterceptionHandlerGeneratorTest {
 
     @Test
     public void createIntInterceptionHandlerForParameterlessMethod() throws Exception {
-        Method method = ProxyUtils.getMethodUnchecked(SimpleService.class, "times");
+        Method method = SharedProxyUtils.getMethodUnchecked(SimpleService.class, "times");
 
         String methodInterceptionHandlerClassName = InterceptionHandlerGenerator.getName(
                 SimpleService.class, method, 0);
@@ -76,7 +78,7 @@ public class InterceptionHandlerGeneratorTest {
 
     @Test
     public void createDoubleInterceptionHandler() throws Exception {
-        Method method = ProxyUtils.getMethodUnchecked(TheoreticalDelegate.class, "foo", double.class, int[].class);
+        Method method = SharedProxyUtils.getMethodUnchecked(TheoreticalDelegate.class, "foo", double.class, int[].class);
         List<Parameter> parameters = Arrays.asList(method.getParameters());
 
         String methodInterceptionHandlerClassName = InterceptionHandlerGenerator.getName(

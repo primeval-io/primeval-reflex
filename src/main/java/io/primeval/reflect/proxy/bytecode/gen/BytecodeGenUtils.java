@@ -1,20 +1,15 @@
-package io.primeval.reflect.proxy.bytecode;
+package io.primeval.reflect.proxy.bytecode.gen;
 
 import static org.objectweb.asm.Opcodes.ALOAD;
 import static org.objectweb.asm.Opcodes.ARETURN;
-import static org.objectweb.asm.Opcodes.ASTORE;
 import static org.objectweb.asm.Opcodes.DLOAD;
 import static org.objectweb.asm.Opcodes.DRETURN;
-import static org.objectweb.asm.Opcodes.DSTORE;
 import static org.objectweb.asm.Opcodes.FLOAD;
 import static org.objectweb.asm.Opcodes.FRETURN;
-import static org.objectweb.asm.Opcodes.FSTORE;
 import static org.objectweb.asm.Opcodes.ILOAD;
 import static org.objectweb.asm.Opcodes.IRETURN;
-import static org.objectweb.asm.Opcodes.ISTORE;
 import static org.objectweb.asm.Opcodes.LLOAD;
 import static org.objectweb.asm.Opcodes.LRETURN;
-import static org.objectweb.asm.Opcodes.LSTORE;
 import static org.objectweb.asm.Opcodes.RETURN;
 
 import java.lang.reflect.GenericArrayType;
@@ -28,15 +23,25 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
-import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 
-public final class TypeUtils {
+import io.primeval.reflect.proxy.handler.BooleanInterceptionHandler;
+import io.primeval.reflect.proxy.handler.ByteInterceptionHandler;
+import io.primeval.reflect.proxy.handler.CharInterceptionHandler;
+import io.primeval.reflect.proxy.handler.DoubleInterceptionHandler;
+import io.primeval.reflect.proxy.handler.FloatInterceptionHandler;
+import io.primeval.reflect.proxy.handler.IntInterceptionHandler;
+import io.primeval.reflect.proxy.handler.InterceptionHandler;
+import io.primeval.reflect.proxy.handler.LongInterceptionHandler;
+import io.primeval.reflect.proxy.handler.ShortInterceptionHandler;
+import io.primeval.reflect.proxy.handler.VoidInterceptionHandler;
+
+public final class BytecodeGenUtils {
 
     public static final Set<Class<?>> IRETURN_TYPES = new HashSet<>(
             Arrays.asList(new Class<?>[] { int.class, char.class, byte.class, short.class, boolean.class }));
 
-    private TypeUtils() {
+    private BytecodeGenUtils() {
     }
 
     // We probably don't support everything, for instance nested types...
@@ -61,7 +66,7 @@ public final class TypeUtils {
         if (clazzToProxy.getTypeParameters().length > 0) {
             buf.append('<');
             for (TypeVariable<?> t : clazzToProxy.getTypeParameters()) {
-                buf.append(TypeUtils.getDescriptorForJavaType(t, true));
+                buf.append(BytecodeGenUtils.getDescriptorForJavaType(t, true));
             }
             buf.append('>');
         }
@@ -137,7 +142,7 @@ public final class TypeUtils {
         if (genericExceptionTypes.length > 0) {
             buf.append('^');
             for (java.lang.reflect.Type t : method.getGenericExceptionTypes()) {
-                buf.append(TypeUtils.getDescriptorForJavaType(t, false));
+                buf.append(BytecodeGenUtils.getDescriptorForJavaType(t, false));
             }
         }
 
@@ -258,22 +263,6 @@ public final class TypeUtils {
         }
     }
 
-    public static int getStoreCode(Class<?> type) {
-        if (type == void.class) {
-            throw new IllegalArgumentException("No store code for void!");
-        } else if (IRETURN_TYPES.contains(type)) {
-            return ISTORE;
-        } else if (type == long.class) {
-            return LSTORE;
-        } else if (type == double.class) {
-            return DSTORE;
-        } else if (type == float.class) {
-            return FSTORE;
-        } else {
-            return ASTORE;
-        }
-    }
-
     public static int getLoadCode(Class<?> type) {
         if (type == void.class) {
             throw new IllegalArgumentException("No load code for void!");
@@ -290,19 +279,42 @@ public final class TypeUtils {
         }
     }
 
-    public static Object getFrameType(Class<?> type) {
-        if (type == void.class) {
-            throw new IllegalArgumentException("No frame type for void, use f_same!");
-        } else if (IRETURN_TYPES.contains(type)) {
-            return Opcodes.INTEGER;
-        } else if (type == long.class) {
-            return Opcodes.LONG;
-        } else if (type == double.class) {
-            return Opcodes.DOUBLE;
-        } else if (type == float.class) {
-            return Opcodes.FLOAT;
+    static Class<?> getInterceptionHandlerClass(Class<?> returnType) {
+        if (returnType == void.class) {
+            return VoidInterceptionHandler.class;
+        } else if (returnType == int.class) {
+            return IntInterceptionHandler.class;
+        } else if (returnType == short.class) {
+            return ShortInterceptionHandler.class;
+        } else if (returnType == double.class) {
+            return DoubleInterceptionHandler.class;
+        } else if (returnType == float.class) {
+            return FloatInterceptionHandler.class;
+        } else if (returnType == char.class) {
+            return CharInterceptionHandler.class;
+        } else if (returnType == long.class) {
+            return LongInterceptionHandler.class;
+        } else if (returnType == byte.class) {
+            return ByteInterceptionHandler.class;
+        } else if (returnType == boolean.class) {
+            return BooleanInterceptionHandler.class;
         } else {
-            return Type.getInternalName(type);
+            return InterceptionHandler.class;
         }
+    }
+
+    static String makeSuffixClassDescriptor(String classToProxyDescriptor, String suffix) {
+        StringBuilder buf = new StringBuilder();
+        buf.append(classToProxyDescriptor, 0, classToProxyDescriptor.length() - 1); // omit
+        // ';'
+        buf.append(suffix);
+        buf.append(';');
+        return buf.toString();
+    }
+
+    static String nullToEmpty(String argsClassDescriptor) {
+        if (argsClassDescriptor == null)
+            return "";
+        return argsClassDescriptor;
     }
 }

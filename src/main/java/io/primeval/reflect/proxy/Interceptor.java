@@ -7,13 +7,13 @@ import io.primeval.reflect.proxy.handler.DoubleInterceptionHandler;
 import io.primeval.reflect.proxy.handler.FloatInterceptionHandler;
 import io.primeval.reflect.proxy.handler.IntInterceptionHandler;
 import io.primeval.reflect.proxy.handler.LongInterceptionHandler;
-import io.primeval.reflect.proxy.handler.ObjectInterceptionHandler;
+import io.primeval.reflect.proxy.handler.InterceptionHandler;
 import io.primeval.reflect.proxy.handler.ShortInterceptionHandler;
 import io.primeval.reflect.proxy.handler.VoidInterceptionHandler;
 
 public interface Interceptor {
 
-    <T, E extends Throwable> T onCall(CallContext context, ObjectInterceptionHandler<T> handler) throws E;
+    <T, E extends Throwable> T onCall(CallContext context, InterceptionHandler<T> handler) throws E;
 
     default <E extends Throwable> void onCall(CallContext context, VoidInterceptionHandler handler) throws E {
         onCall(context, handler.boxed());
@@ -60,7 +60,7 @@ public interface Interceptor {
         }
 
         @Override
-        public <T, E extends Throwable> T onCall(CallContext context, ObjectInterceptionHandler<T> handler) throws E {
+        public <T, E extends Throwable> T onCall(CallContext context, InterceptionHandler<T> handler) throws E {
             return handler.invoke();
         }
 

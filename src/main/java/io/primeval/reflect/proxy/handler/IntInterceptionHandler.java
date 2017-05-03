@@ -13,8 +13,8 @@ public interface IntInterceptionHandler extends ArgumentsProvider {
         return invoke(getArguments());
     }
 
-    default public ObjectInterceptionHandler<Integer> boxed() {
-        return new ObjectInterceptionHandler<Integer>() {
+    default public InterceptionHandler<Integer> boxed() {
+        return new InterceptionHandler<Integer>() {
 
             @Override
             public <E extends Throwable> Integer invoke(Arguments arguments) throws E {

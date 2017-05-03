@@ -14,7 +14,8 @@ import org.junit.Test;
 
 import io.primeval.reflect.arguments.Arguments;
 import io.primeval.reflect.arguments.ArgumentsUpdater;
-import io.primeval.reflect.proxy.shared.ProxyUtils;
+import io.primeval.reflect.proxy.bytecode.gen.MethodArgumentsGenerator;
+import io.primeval.reflect.proxy.shared.SharedProxyUtils;
 import io.primeval.reflect.proxy.theory.TheoreticalDelegate;
 
 public final class MethodArgumentsGeneratorTest {
@@ -22,7 +23,7 @@ public final class MethodArgumentsGeneratorTest {
     @Test
     public void test() throws Exception {
 
-        Method method = ProxyUtils.getMethodUnchecked(TheoreticalDelegate.class, "test", PrintStream.class, int.class,
+        Method method = SharedProxyUtils.getMethodUnchecked(TheoreticalDelegate.class, "test", PrintStream.class, int.class,
                 byte.class,
                 String.class);
         List<Parameter> parameters = Arrays.asList(method.getParameters());

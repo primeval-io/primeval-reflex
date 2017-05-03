@@ -9,21 +9,21 @@ import org.junit.Test;
 import io.primeval.reflect.arguments.Arguments;
 import io.primeval.reflect.proxy.CallContext;
 import io.primeval.reflect.proxy.Interceptor;
-import io.primeval.reflect.proxy.handler.ObjectInterceptionHandler;
-import io.primeval.reflect.proxy.shared.ProxyUtils;
+import io.primeval.reflect.proxy.handler.InterceptionHandler;
+import io.primeval.reflect.proxy.shared.SharedProxyUtils;
 
 public class CompositeInterceptorTest {
 
     @Test
     public void testShouldCompose() {
 
-        Method meth = ProxyUtils.getMethodUnchecked(CompositeInterceptorTest.class, "helloName", String.class);
+        Method meth = SharedProxyUtils.getMethodUnchecked(CompositeInterceptorTest.class, "helloName", String.class);
         CallContext cc = new CallContext(CompositeInterceptorTest.class, meth,
                 Arrays.asList(meth.getParameters()));
 
         String firstParamName = cc.parameters.get(0).getName();
 
-        ObjectInterceptionHandler<String> terminalInterceptionHandler = new ObjectInterceptionHandler<String>() {
+        InterceptionHandler<String> terminalInterceptionHandler = new InterceptionHandler<String>() {
 
             @Override
             public Arguments getArguments() {
@@ -43,7 +43,7 @@ public class CompositeInterceptorTest {
 
             @SuppressWarnings("unchecked")
             @Override
-            public <T, E extends Throwable> T onCall(CallContext context, ObjectInterceptionHandler<T> handler)
+            public <T, E extends Throwable> T onCall(CallContext context, InterceptionHandler<T> handler)
                     throws E {
                 Arguments arguments = handler.getArguments().updater().setObjectArg(firstParamName, "universe")
                         .update();
@@ -60,7 +60,7 @@ public class CompositeInterceptorTest {
             int called = 0;
 
             @Override
-            public <T, E extends Throwable> T onCall(CallContext context, ObjectInterceptionHandler<T> handler)
+            public <T, E extends Throwable> T onCall(CallContext context, InterceptionHandler<T> handler)
                     throws E {
                 try {
                     if (called % 3 == 0) {

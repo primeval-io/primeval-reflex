@@ -13,8 +13,8 @@ public interface ShortInterceptionHandler extends ArgumentsProvider {
         return invoke(getArguments());
     }
 
-    default public ObjectInterceptionHandler<Short> boxed() {
-        return new ObjectInterceptionHandler<Short>() {
+    default public InterceptionHandler<Short> boxed() {
+        return new InterceptionHandler<Short>() {
 
             @Override
             public <E extends Throwable> Short invoke(Arguments arguments) throws E {

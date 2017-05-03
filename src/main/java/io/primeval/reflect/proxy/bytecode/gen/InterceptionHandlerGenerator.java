@@ -1,4 +1,4 @@
-package io.primeval.reflect.proxy.bytecode;
+package io.primeval.reflect.proxy.bytecode.gen;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
@@ -30,16 +30,16 @@ public final class InterceptionHandlerGenerator implements Opcodes {
 
         String suffix = SUFFIX_START + method.getName() + methodId;
         String selfClassInternalName = classToProxyInternalName + suffix;
-        String selfClassDescriptor = ReflectUtils.makeSuffixClassDescriptor(classToProxyDescriptor, suffix);
+        String selfClassDescriptor = BytecodeGenUtils.makeSuffixClassDescriptor(classToProxyDescriptor, suffix);
 
         Class<?> returnType = method.getReturnType();
 
-        Class<?> interceptionHandlerClass = ReflectUtils.getInterceptionHandlerClass(returnType);
+        Class<?> interceptionHandlerClass = BytecodeGenUtils.getInterceptionHandlerClass(returnType);
         String interceptionHandlerClassInternalName = Type.getInternalName(interceptionHandlerClass);
 
         String argsSuffix = "$argsFor$" + method.getName() + methodId;
         String argsClassInternalName = classToProxyInternalName + argsSuffix;
-        String argsClassDescriptor = ReflectUtils.makeSuffixClassDescriptor(classToProxyDescriptor, argsSuffix);
+        String argsClassDescriptor = BytecodeGenUtils.makeSuffixClassDescriptor(classToProxyDescriptor, argsSuffix);
 
         Parameter[] parameters = method.getParameters();
         cw.visit(52, ACC_PUBLIC + ACC_FINAL + ACC_SUPER, selfClassInternalName, null, "java/lang/Object",
@@ -149,7 +149,7 @@ public final class InterceptionHandlerGenerator implements Opcodes {
                         classToProxyDescriptor);
                 mv.visitMethodInsn(INVOKEVIRTUAL, classToProxyInternalName, method.getName(),
                         "()" + Type.getDescriptor(returnType), false);
-                mv.visitInsn(TypeUtils.getReturnCode(returnType));
+                mv.visitInsn(BytecodeGenUtils.getReturnCode(returnType));
                 Label l1 = new Label();
                 mv.visitLabel(l1);
                 mv.visitLocalVariable("this", selfClassDescriptor, null, l0,
@@ -184,7 +184,7 @@ public final class InterceptionHandlerGenerator implements Opcodes {
                 }
                 mv.visitMethodInsn(INVOKEVIRTUAL, classToProxyInternalName, method.getName(), methodDescriptor,
                         false);
-                mv.visitInsn(TypeUtils.getReturnCode(returnType));
+                mv.visitInsn(BytecodeGenUtils.getReturnCode(returnType));
                 mv.visitLabel(l1);
                 mv.visitFrame(Opcodes.F_SAME, 0, null, 0, null);
                 mv.visitVarInsn(ALOAD, 0);
@@ -205,7 +205,7 @@ public final class InterceptionHandlerGenerator implements Opcodes {
 
                 mv.visitMethodInsn(INVOKEVIRTUAL, classToProxyInternalName, method.getName(), methodDescriptor,
                         false);
-                mv.visitInsn(TypeUtils.getReturnCode(returnType));
+                mv.visitInsn(BytecodeGenUtils.getReturnCode(returnType));
                 Label l4 = new Label();
                 mv.visitLabel(l4);
                 mv.visitLocalVariable("this", selfClassDescriptor, null, l0, l4,
@@ -243,7 +243,7 @@ public final class InterceptionHandlerGenerator implements Opcodes {
             }
             mv.visitMethodInsn(INVOKEVIRTUAL, classToProxyInternalName, method.getName(), methodDescriptor,
                     false);
-            mv.visitInsn(TypeUtils.getReturnCode(returnType));
+            mv.visitInsn(BytecodeGenUtils.getReturnCode(returnType));
             Label l2 = new Label();
             mv.visitLabel(l2);
             mv.visitLocalVariable("this", selfClassDescriptor, null, l0, l2, 0);

@@ -8,7 +8,7 @@ import io.primeval.reflect.proxy.handler.ByteInterceptionHandler;
 import io.primeval.reflect.proxy.handler.CharInterceptionHandler;
 import io.primeval.reflect.proxy.handler.IntInterceptionHandler;
 import io.primeval.reflect.proxy.handler.LongInterceptionHandler;
-import io.primeval.reflect.proxy.handler.ObjectInterceptionHandler;
+import io.primeval.reflect.proxy.handler.InterceptionHandler;
 import io.primeval.reflect.proxy.handler.ShortInterceptionHandler;
 import io.primeval.reflect.proxy.handler.VoidInterceptionHandler;
 
@@ -34,7 +34,7 @@ public abstract class InterceptionHelper {
         this.arguments = arguments;
     }
 
-    public static <T> ObjectInterceptionHelper<T> create(CallContext context, ObjectInterceptionHandler<T> handler) {
+    public static <T> ObjectInterceptionHelper<T> create(CallContext context, InterceptionHandler<T> handler) {
         return new ObjectInterceptionHelper<>(context, handler);
     }
 

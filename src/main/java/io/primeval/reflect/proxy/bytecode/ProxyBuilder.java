@@ -10,7 +10,7 @@ import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.primeval.reflect.proxy.shared.Proxy;
+import io.primeval.reflect.proxy.bytecode.gen.ProxyClassGenerator;
 
 /**
  * Entry point to proxy a class and specify which interfaces to implement
@@ -45,8 +45,8 @@ public final class ProxyBuilder {
                 }
 
                 @Override
-                public Proxy newInstance(T target) {
-                    return ReflectUtils.trust(() -> (Proxy) proxyClass.getConstructor(targetClass).newInstance(target));
+                public Proxy newInstance(Object target) {
+                    return ProxyUtils.trust(() -> (Proxy) proxyClass.getConstructor(targetClass).newInstance(target));
                 }
             };
         } catch (Exception e) {

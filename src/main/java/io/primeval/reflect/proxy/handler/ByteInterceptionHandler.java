@@ -13,8 +13,8 @@ public interface ByteInterceptionHandler extends ArgumentsProvider {
         return invoke(getArguments());
     }
 
-    default public ObjectInterceptionHandler<Byte> boxed() {
-        return new ObjectInterceptionHandler<Byte>() {
+    default public InterceptionHandler<Byte> boxed() {
+        return new InterceptionHandler<Byte>() {
 
             @Override
             public <E extends Throwable> Byte invoke(Arguments arguments) throws E {

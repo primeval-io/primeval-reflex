@@ -24,11 +24,10 @@ import io.primeval.reflect.arguments.Arguments;
 import io.primeval.reflect.proxy.CallContext;
 import io.primeval.reflect.proxy.Interceptor;
 import io.primeval.reflect.proxy.handler.IntInterceptionHandler;
-import io.primeval.reflect.proxy.handler.ObjectInterceptionHandler;
+import io.primeval.reflect.proxy.handler.InterceptionHandler;
 import io.primeval.reflect.proxy.handler.helper.IntInterceptionHelper;
 import io.primeval.reflect.proxy.handler.helper.InterceptionHelper;
 import io.primeval.reflect.proxy.handler.helper.ObjectInterceptionHelper;
-import io.primeval.reflect.proxy.shared.Proxy;
 import io.primeval.reflect.proxy.testset.abstracts.AbstractSimplestService;
 import io.primeval.reflect.proxy.testset.abstracts.AbstractedOverridingSimplestService;
 import io.primeval.reflect.proxy.testset.abstracts.AbstractedSimplestService;
@@ -179,7 +178,7 @@ public final class ProxyBuilderTest {
             }
 
             @Override
-            public <T, E extends Throwable> T onCall(CallContext callContext, ObjectInterceptionHandler<T> handler)
+            public <T, E extends Throwable> T onCall(CallContext callContext, InterceptionHandler<T> handler)
                     throws E {
                 if (callContext.method.getName().equals("increase")) {
                     ObjectInterceptionHelper<T> helper = InterceptionHelper.create(callContext, handler);
