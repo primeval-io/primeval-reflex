@@ -2,9 +2,9 @@ package io.primeval.reflect.proxy.composite;
 
 import java.util.function.Function;
 
+import io.primeval.reflect.arguments.Arguments;
 import io.primeval.reflect.proxy.CallContext;
 import io.primeval.reflect.proxy.Interceptor;
-import io.primeval.reflect.proxy.arguments.Arguments;
 import io.primeval.reflect.proxy.handler.ObjectInterceptionHandler;
 
 public final class CompositeObjectInterceptors {

@@ -12,9 +12,9 @@ import java.util.List;
 
 import org.junit.Test;
 
-import io.primeval.reflect.proxy.arguments.Arguments;
-import io.primeval.reflect.proxy.arguments.ArgumentsUpdater;
-import io.primeval.reflect.proxy.bytecode.shared.ProxyUtils;
+import io.primeval.reflect.arguments.Arguments;
+import io.primeval.reflect.arguments.ArgumentsUpdater;
+import io.primeval.reflect.proxy.shared.ProxyUtils;
 import io.primeval.reflect.proxy.theory.TheoreticalDelegate;
 
 public final class MethodArgumentsGeneratorTest {

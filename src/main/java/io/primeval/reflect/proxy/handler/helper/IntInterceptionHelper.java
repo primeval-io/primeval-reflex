@@ -1,7 +1,7 @@
 package io.primeval.reflect.proxy.handler.helper;
 
+import io.primeval.reflect.arguments.ArgumentsProvider;
 import io.primeval.reflect.proxy.CallContext;
-import io.primeval.reflect.proxy.arguments.ArgumentsProvider;
 import io.primeval.reflect.proxy.handler.IntInterceptionHandler;
 
 public final class IntInterceptionHelper extends InterceptionHelper {

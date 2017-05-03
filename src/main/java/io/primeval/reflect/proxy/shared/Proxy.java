@@ -1,4 +1,4 @@
-package io.primeval.reflect.proxy.bytecode.shared;
+package io.primeval.reflect.proxy.shared;
 
 import io.primeval.reflect.proxy.Interceptor;
 

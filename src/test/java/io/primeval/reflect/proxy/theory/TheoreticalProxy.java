@@ -5,8 +5,8 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 
 import io.primeval.reflect.proxy.CallContext;
-import io.primeval.reflect.proxy.bytecode.shared.Proxy;
-import io.primeval.reflect.proxy.bytecode.shared.ProxyUtils;
+import io.primeval.reflect.proxy.shared.Proxy;
+import io.primeval.reflect.proxy.shared.ProxyUtils;
 
 public final class TheoreticalProxy extends Proxy implements Hello, Goodbye, Stuff {
 
@@ -36,7 +36,7 @@ public final class TheoreticalProxy extends Proxy implements Hello, Goodbye, Stu
 
     @Override
     public String hello() {
-        return interceptor.onCall(cc0, new M0InterceptionHandler(delegate));
+        return interceptor.onCall(cc0, handler0);
     }
 
     @Override

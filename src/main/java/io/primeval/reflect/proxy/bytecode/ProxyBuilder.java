@@ -10,7 +10,7 @@ import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.primeval.reflect.proxy.bytecode.shared.Proxy;
+import io.primeval.reflect.proxy.shared.Proxy;
 
 /**
  * Entry point to proxy a class and specify which interfaces to implement
@@ -34,31 +34,30 @@ public final class ProxyBuilder {
             dynamicClassLoader.declareClassToProxy(targetClass, interfaces, methods, shouldIntercept);
 
             String className = ProxyClassGenerator.getName(targetClass);
-            Class<?> wovenClass = dynamicClassLoader.loadClass(className);
+            Class<?> proxyClass = dynamicClassLoader.loadClass(className);
 
             return new ProxyClass<T>() {
 
                 @SuppressWarnings("unchecked")
                 @Override
                 public Class<T> targetClass() {
-                    return (Class<T>) wovenClass;
+                    return (Class<T>) proxyClass;
                 }
 
                 @Override
                 public Proxy newInstance(T target) {
-                    return ReflectUtils.trust(() -> (Proxy) wovenClass.getConstructor(targetClass).newInstance(target));
+                    return ReflectUtils.trust(() -> (Proxy) proxyClass.getConstructor(targetClass).newInstance(target));
                 }
             };
         } catch (Exception e) {
-            LOGGER.error("Could not weave class {}", targetClass.getName());
-            e.printStackTrace();
+            LOGGER.error("Could not proxy class {}", targetClass.getName());
             throw new RuntimeException(e);
         }
     }
 
     /* @VisibleForTesting */
-    static Method[] getMethods(Class<?> clazzToWeave) {
-        Method[] methods = clazzToWeave.getMethods();
+    static Method[] getMethods(Class<?> clazzToProxy) {
+        Method[] methods = clazzToProxy.getMethods();
 
         // group methods by name and parameters (unique dispatch)
         Map<MethodIdentifier, List<Method>> uniqueMethods = Stream.of(methods)

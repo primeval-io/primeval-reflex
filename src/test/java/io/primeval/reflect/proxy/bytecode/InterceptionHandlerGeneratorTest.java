@@ -8,12 +8,12 @@ import java.util.List;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 
-import io.primeval.reflect.proxy.arguments.Arguments;
-import io.primeval.reflect.proxy.bytecode.shared.ProxyUtils;
+import io.primeval.reflect.arguments.Arguments;
 import io.primeval.reflect.proxy.composite.ArgumentsMock;
 import io.primeval.reflect.proxy.handler.DoubleInterceptionHandler;
 import io.primeval.reflect.proxy.handler.IntInterceptionHandler;
 import io.primeval.reflect.proxy.handler.ObjectInterceptionHandler;
+import io.primeval.reflect.proxy.shared.ProxyUtils;
 import io.primeval.reflect.proxy.testset.simpleservice.SimpleService;
 import io.primeval.reflect.proxy.theory.TheoreticalDelegate;
 

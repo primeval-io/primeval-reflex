@@ -6,11 +6,11 @@ import java.util.Arrays;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 
+import io.primeval.reflect.arguments.Arguments;
 import io.primeval.reflect.proxy.CallContext;
 import io.primeval.reflect.proxy.Interceptor;
-import io.primeval.reflect.proxy.arguments.Arguments;
-import io.primeval.reflect.proxy.bytecode.shared.ProxyUtils;
 import io.primeval.reflect.proxy.handler.ObjectInterceptionHandler;
+import io.primeval.reflect.proxy.shared.ProxyUtils;
 
 public class CompositeInterceptorTest {
 

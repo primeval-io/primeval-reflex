@@ -1,4 +1,4 @@
-package io.primeval.reflect.proxy.arguments;
+package io.primeval.reflect.arguments;
 
 import java.lang.reflect.Parameter;
 import java.util.Collections;

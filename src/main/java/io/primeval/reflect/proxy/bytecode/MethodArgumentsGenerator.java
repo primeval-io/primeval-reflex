@@ -44,7 +44,7 @@ public final class MethodArgumentsGenerator implements Opcodes {
                         .toArray(Type[]::new));
 
         cw.visit(52, ACC_PUBLIC + ACC_FINAL + ACC_SUPER, selfClassInternalName, null, "java/lang/Object",
-                new String[] { "io/primeval/reflect/proxy/arguments/Arguments" });
+                new String[] { "io/primeval/reflect/arguments/Arguments" });
         Parameter[] parameters = method.getParameters();
 
         generateFields(method, cw, parameters);
@@ -67,7 +67,7 @@ public final class MethodArgumentsGenerator implements Opcodes {
             String constDesc, Parameter[] parameters) {
         MethodVisitor mv;
 
-        mv = cw.visitMethod(ACC_PUBLIC, "updater", "()Lio/primeval/reflect/proxy/arguments/ArgumentsUpdater;", null, null);
+        mv = cw.visitMethod(ACC_PUBLIC, "updater", "()Lio/primeval/reflect/arguments/ArgumentsUpdater;", null, null);
         mv.visitCode();
         Label l0 = new Label();
         mv.visitLabel(l0);

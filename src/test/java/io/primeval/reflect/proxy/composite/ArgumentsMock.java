@@ -5,8 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import io.primeval.reflect.proxy.arguments.Arguments;
-import io.primeval.reflect.proxy.arguments.ArgumentsUpdater;
+import io.primeval.reflect.arguments.Arguments;
+import io.primeval.reflect.arguments.ArgumentsUpdater;
 
 public final class ArgumentsMock implements Arguments, ArgumentsUpdater {
 

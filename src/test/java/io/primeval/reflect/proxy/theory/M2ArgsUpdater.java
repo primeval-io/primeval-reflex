@@ -3,8 +3,8 @@ package io.primeval.reflect.proxy.theory;
 import java.lang.reflect.Parameter;
 import java.util.List;
 
-import io.primeval.reflect.proxy.arguments.Arguments;
-import io.primeval.reflect.proxy.arguments.ArgumentsUpdater;
+import io.primeval.reflect.arguments.Arguments;
+import io.primeval.reflect.arguments.ArgumentsUpdater;
 
 public final class M2ArgsUpdater implements ArgumentsUpdater {
 

@@ -48,7 +48,7 @@ import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Type;
 
-import io.primeval.reflect.proxy.bytecode.shared.Proxy;
+import io.primeval.reflect.proxy.shared.Proxy;
 
 public final class ProxyClassGenerator {
 
@@ -125,7 +125,7 @@ public final class ProxyClassGenerator {
                 addTypeSpecial(mv, type);
                 mv.visitInsn(AASTORE);
             }
-            mv.visitMethodInsn(INVOKESTATIC, "io/primeval/reflect/proxy/bytecode/shared/ProxyUtils",
+            mv.visitMethodInsn(INVOKESTATIC, "io/primeval/reflect/proxy/shared/ProxyUtils",
                     "getMethodUnchecked",
                     "(Ljava/lang/Class;Ljava/lang/String;[Ljava/lang/Class;)Ljava/lang/reflect/Method;", false);
             mv.visitFieldInsn(PUTSTATIC, selfClassInternalName, "meth" + i, "Ljava/lang/reflect/Method;");
@@ -218,9 +218,9 @@ public final class ProxyClassGenerator {
         return buf.toString();
     }
 
-    private static void addTypeAnnotations(Class<?> clazzToWeave, ClassWriter cw)
+    private static void addTypeAnnotations(Class<?> clazzToProxy, ClassWriter cw)
             throws IllegalAccessException, InvocationTargetException {
-        for (Annotation ann : clazzToWeave.getDeclaredAnnotations()) {
+        for (Annotation ann : clazzToProxy.getDeclaredAnnotations()) {
             Class<? extends Annotation> annotationType = ann.annotationType();
 
             AnnotationVisitor av0 = cw.visitAnnotation(Type.getDescriptor(annotationType), true);
@@ -295,7 +295,7 @@ public final class ProxyClassGenerator {
         }
     }
 
-    private static void writeSimpleDelegationMethod(Class<?> clazzToWeave, String proxyClassInternalName,
+    private static void writeSimpleDelegationMethod(Class<?> clazzToProxy, String proxyClassInternalName,
             String proxyClassDescriptor,
             String selfClassInternalName, String selfClassDescriptor, ClassWriter cw,
             MethodVisitor mv, Method method, int methId) throws IllegalAccessException, InvocationTargetException {
@@ -350,7 +350,7 @@ public final class ProxyClassGenerator {
 
     }
 
-    private static void writeInterceptedMethod(Class<?> clazzToWeave, String classToProxyInternalName,
+    private static void writeInterceptedMethod(Class<?> clazzToProxy, String classToProxyInternalName,
             String classToProxyDescriptor,
             String selfClassInternalName, String selfClassDescriptor, ClassWriter cw,
             MethodVisitor mv, Method method, int methodId) throws IllegalAccessException, InvocationTargetException {

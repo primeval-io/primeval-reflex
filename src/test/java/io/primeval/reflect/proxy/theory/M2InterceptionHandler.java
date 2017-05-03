@@ -1,6 +1,6 @@
 package io.primeval.reflect.proxy.theory;
 
-import io.primeval.reflect.proxy.arguments.Arguments;
+import io.primeval.reflect.arguments.Arguments;
 import io.primeval.reflect.proxy.handler.DoubleInterceptionHandler;
 
 public final class M2InterceptionHandler implements DoubleInterceptionHandler {

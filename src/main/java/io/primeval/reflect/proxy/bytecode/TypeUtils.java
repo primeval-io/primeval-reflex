@@ -41,13 +41,13 @@ public final class TypeUtils {
 
     // We probably don't support everything, for instance nested types...
     // But it's simple enough to add here.
-    public static String getTypeSignature(Class<?> clazzToWeave) {
+    public static String getTypeSignature(Class<?> clazzToProxy) {
         boolean isGeneric = false;
-        isGeneric = clazzToWeave.getTypeParameters().length > 0;
-        java.lang.reflect.Type genericSuperclass = clazzToWeave.getGenericSuperclass();
+        isGeneric = clazzToProxy.getTypeParameters().length > 0;
+        java.lang.reflect.Type genericSuperclass = clazzToProxy.getGenericSuperclass();
         if (!isGeneric) {
             isGeneric = genericSuperclass instanceof ParameterizedType;
-            for (java.lang.reflect.Type t : clazzToWeave.getGenericInterfaces()) {
+            for (java.lang.reflect.Type t : clazzToProxy.getGenericInterfaces()) {
                 if (!isGeneric) {
                     isGeneric = t instanceof ParameterizedType;
                 }
@@ -58,16 +58,16 @@ public final class TypeUtils {
         }
 
         StringBuilder buf = new StringBuilder();
-        if (clazzToWeave.getTypeParameters().length > 0) {
+        if (clazzToProxy.getTypeParameters().length > 0) {
             buf.append('<');
-            for (TypeVariable<?> t : clazzToWeave.getTypeParameters()) {
+            for (TypeVariable<?> t : clazzToProxy.getTypeParameters()) {
                 buf.append(TypeUtils.getDescriptorForJavaType(t, true));
             }
             buf.append('>');
         }
         buf.append(getDescriptorForJavaType(genericSuperclass));
 
-        for (java.lang.reflect.Type t : clazzToWeave.getGenericInterfaces()) {
+        for (java.lang.reflect.Type t : clazzToProxy.getGenericInterfaces()) {
             buf.append(getDescriptorForJavaType(t));
         }
         String typeSig = buf.toString();

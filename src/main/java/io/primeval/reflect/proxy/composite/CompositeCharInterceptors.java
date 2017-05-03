@@ -1,8 +1,8 @@
 package io.primeval.reflect.proxy.composite;
 
+import io.primeval.reflect.arguments.Arguments;
 import io.primeval.reflect.proxy.CallContext;
 import io.primeval.reflect.proxy.Interceptor;
-import io.primeval.reflect.proxy.arguments.Arguments;
 import io.primeval.reflect.proxy.handler.CharInterceptionHandler;
 
 public final class CompositeCharInterceptors {

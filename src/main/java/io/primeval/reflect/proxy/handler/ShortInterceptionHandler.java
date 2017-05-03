@@ -1,7 +1,7 @@
 package io.primeval.reflect.proxy.handler;
 
-import io.primeval.reflect.proxy.arguments.Arguments;
-import io.primeval.reflect.proxy.arguments.ArgumentsProvider;
+import io.primeval.reflect.arguments.Arguments;
+import io.primeval.reflect.arguments.ArgumentsProvider;
 
 public interface ShortInterceptionHandler extends ArgumentsProvider {
 

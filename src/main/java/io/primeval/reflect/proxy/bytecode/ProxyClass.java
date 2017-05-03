@@ -1,6 +1,6 @@
 package io.primeval.reflect.proxy.bytecode;
 
-import io.primeval.reflect.proxy.bytecode.shared.Proxy;
+import io.primeval.reflect.proxy.shared.Proxy;
 
 public interface ProxyClass<T> {
 

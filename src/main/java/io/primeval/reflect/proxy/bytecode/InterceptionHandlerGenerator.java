@@ -107,14 +107,14 @@ public final class InterceptionHandlerGenerator implements Opcodes {
         }
 
         {
-            mv = cw.visitMethod(ACC_PUBLIC, "getArguments", "()Lio/primeval/reflect/proxy/arguments/Arguments;", null,
+            mv = cw.visitMethod(ACC_PUBLIC, "getArguments", "()Lio/primeval/reflect/arguments/Arguments;", null,
                     null);
             mv.visitCode();
             Label l0 = new Label();
             mv.visitLabel(l0);
             if (parameters.length == 0) {
-                mv.visitFieldInsn(GETSTATIC, "io/primeval/reflect/proxy/arguments/Arguments", "EMPTY_ARGUMENTS",
-                        "Lio/primeval/reflect/proxy/arguments/Arguments;");
+                mv.visitFieldInsn(GETSTATIC, "io/primeval/reflect/arguments/Arguments", "EMPTY_ARGUMENTS",
+                        "Lio/primeval/reflect/arguments/Arguments;");
             } else {
                 mv.visitVarInsn(ALOAD, 0);
                 mv.visitFieldInsn(GETFIELD, selfClassInternalName, "arguments", argsClassDescriptor);
@@ -135,7 +135,7 @@ public final class InterceptionHandlerGenerator implements Opcodes {
         {
 
             mv = cw.visitMethod(ACC_PUBLIC, "invoke",
-                    "(Lio/primeval/reflect/proxy/arguments/Arguments;)" + invokeReturnTypeDescriptor, null,
+                    "(Lio/primeval/reflect/arguments/Arguments;)" + invokeReturnTypeDescriptor, null,
                     new String[] { "java/lang/Exception" });
             mv.visitParameter("arguments", 0);
             mv.visitCode();
@@ -154,7 +154,7 @@ public final class InterceptionHandlerGenerator implements Opcodes {
                 mv.visitLabel(l1);
                 mv.visitLocalVariable("this", selfClassDescriptor, null, l0,
                         l1, 0);
-                mv.visitLocalVariable("arguments", "Lio/primeval/reflect/proxy/arguments/Arguments;", null, l0, l1, 1);
+                mv.visitLocalVariable("arguments", "Lio/primeval/reflect/arguments/Arguments;", null, l0, l1, 1);
             } else {
 
                 Label l0 = new Label();
@@ -195,7 +195,7 @@ public final class InterceptionHandlerGenerator implements Opcodes {
                     mv.visitVarInsn(ALOAD, 1);
                     mv.visitLdcInsn(parameter.getName());
                     Class<?> methodTypeDesc = paramType.isPrimitive() ? paramType : Object.class;
-                    mv.visitMethodInsn(INVOKEINTERFACE, "io/primeval/reflect/proxy/arguments/Arguments",
+                    mv.visitMethodInsn(INVOKEINTERFACE, "io/primeval/reflect/arguments/Arguments",
                             getArgumentGetter(paramType), "(Ljava/lang/String;)" + Type.getDescriptor(methodTypeDesc),
                             true);
                     if (!paramType.isPrimitive()) {
@@ -210,7 +210,7 @@ public final class InterceptionHandlerGenerator implements Opcodes {
                 mv.visitLabel(l4);
                 mv.visitLocalVariable("this", selfClassDescriptor, null, l0, l4,
                         0);
-                mv.visitLocalVariable("arguments", "Lio/primeval/reflect/proxy/arguments/Arguments;", null, l0, l4, 1);
+                mv.visitLocalVariable("arguments", "Lio/primeval/reflect/arguments/Arguments;", null, l0, l4, 1);
                 mv.visitLocalVariable("customArgs", argsClassDescriptor, null, l3, l1, 2);
 
             }

@@ -20,11 +20,10 @@ import org.assertj.core.util.Lists;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import io.primeval.reflect.arguments.Arguments;
 import io.primeval.reflect.proxy.CallContext;
 import io.primeval.reflect.proxy.Interceptor;
-import io.primeval.reflect.proxy.arguments.Arguments;
 import io.primeval.reflect.proxy.bytecode.ProxyClassLoader;
-import io.primeval.reflect.proxy.bytecode.shared.Proxy;
 import io.primeval.reflect.proxy.bytecode.MethodIdentifier;
 import io.primeval.reflect.proxy.bytecode.ProxyBuilder;
 import io.primeval.reflect.proxy.bytecode.ProxyClass;
@@ -33,6 +32,7 @@ import io.primeval.reflect.proxy.handler.ObjectInterceptionHandler;
 import io.primeval.reflect.proxy.handler.helper.IntInterceptionHelper;
 import io.primeval.reflect.proxy.handler.helper.InterceptionHelper;
 import io.primeval.reflect.proxy.handler.helper.ObjectInterceptionHelper;
+import io.primeval.reflect.proxy.shared.Proxy;
 import io.primeval.reflect.proxy.testset.abstracts.AbstractSimplestService;
 import io.primeval.reflect.proxy.testset.abstracts.AbstractedOverridingSimplestService;
 import io.primeval.reflect.proxy.testset.abstracts.AbstractedSimplestService;
@@ -61,7 +61,7 @@ public final class ProxyBuilderTest {
     }
 
     @Test
-    public void shouldWeaveSimplestClass() {
+    public void shouldProxySimplestClass() {
         SimplestService simplestService = new SimplestService();
 
         ProxyClass<SimplestService> proxyFactory = ProxyBuilder.build(proxyClassLoader, SimplestService.class,
@@ -71,10 +71,10 @@ public final class ProxyBuilderTest {
         Object proxyService = proxyFactory.newInstance(simplestService);
         assertThat(proxyService).isInstanceOf(SimplestInterface.class);
 
-        SimplestInterface wovenItf = (SimplestInterface) proxyService;
+        SimplestInterface proxyItf = (SimplestInterface) proxyService;
         try {
             System.clearProperty(SimplestService.PROP_NAME);
-            wovenItf.foo();
+            proxyItf.foo();
             assertThat(System.getProperty(SimplestService.PROP_NAME)).isEqualTo("true");
         } finally {
             System.clearProperty(SimplestService.PROP_NAME);
@@ -82,7 +82,7 @@ public final class ProxyBuilderTest {
     }
 
     @Test
-    public void shouldWeaveAbstractedSimplestClass() {
+    public void shouldProxyAbstractedSimplestClass() {
         AbstractedSimplestService simplestService = new AbstractedSimplestService();
 
         ProxyClass<AbstractedSimplestService> proxyFactory = ProxyBuilder.build(proxyClassLoader,
@@ -93,10 +93,10 @@ public final class ProxyBuilderTest {
         Object proxyService = proxyFactory.newInstance(simplestService);
         assertThat(proxyService).isInstanceOf(SimplestInterface.class);
 
-        SimplestInterface wovenItf = (SimplestInterface) proxyService;
+        SimplestInterface proxyItf = (SimplestInterface) proxyService;
         try {
             System.clearProperty(AbstractSimplestService.PROP_NAME);
-            wovenItf.foo();
+            proxyItf.foo();
             assertThat(System.getProperty(AbstractSimplestService.PROP_NAME)).isEqualTo("true");
         } finally {
             System.clearProperty(AbstractSimplestService.PROP_NAME);
@@ -104,7 +104,7 @@ public final class ProxyBuilderTest {
     }
 
     @Test
-    public void shouldWeaveAbstractedOverridingSimplestClass() {
+    public void shouldProxyAbstractedOverridingSimplestClass() {
         AbstractedOverridingSimplestService simplestService = new AbstractedOverridingSimplestService();
 
         ProxyClass<AbstractedOverridingSimplestService> proxyFactory = ProxyBuilder.build(proxyClassLoader,
@@ -115,10 +115,10 @@ public final class ProxyBuilderTest {
         Object proxyService = proxyFactory.newInstance(simplestService);
         assertThat(proxyService).isInstanceOf(SimplestInterface.class);
 
-        SimplestInterface wovenItf = (SimplestInterface) proxyService;
+        SimplestInterface proxyItf = (SimplestInterface) proxyService;
         try {
             System.clearProperty(AbstractedOverridingSimplestService.PROP_NAME);
-            wovenItf.foo();
+            proxyItf.foo();
             assertThat(System.getProperty(AbstractedOverridingSimplestService.PROP_NAME)).isEqualTo("true");
         } finally {
             System.clearProperty(AbstractedOverridingSimplestService.PROP_NAME);
@@ -126,7 +126,7 @@ public final class ProxyBuilderTest {
     }
 
     @Test
-    public void shouldWeaveDefaultClass() {
+    public void shouldProxyDefaultClass() {
         DefaultImpl simplestService = new DefaultImpl();
 
         ProxyClass<DefaultImpl> proxyFactory = ProxyBuilder.build(proxyClassLoader, DefaultImpl.class,
@@ -136,14 +136,14 @@ public final class ProxyBuilderTest {
         Object proxyService = proxyFactory.newInstance(simplestService);
         assertThat(proxyService).isInstanceOf(DefaultItf.class);
 
-        DefaultItf wovenItf = (DefaultItf) proxyService;
-        Class<?> myDefault = wovenItf.myDefault();
+        DefaultItf proxyItf = (DefaultItf) proxyService;
+        Class<?> myDefault = proxyItf.myDefault();
         assertThat(myDefault).isSameAs(proxyService.getClass());
 
     }
 
     @Test
-    public void shouldWeaveOverridedDefaultClass() {
+    public void shouldProxyOverridedDefaultClass() {
         DefaultOverridingImpl simplestService = new DefaultOverridingImpl();
 
         ProxyClass<DefaultOverridingImpl> proxyFactory = ProxyBuilder.build(proxyClassLoader,
@@ -154,13 +154,13 @@ public final class ProxyBuilderTest {
         Proxy proxyService = proxyFactory.newInstance(simplestService);
         assertThat(proxyService).isInstanceOf(DefaultItf.class);
 
-        DefaultItf wovenItf = (DefaultItf) proxyService;
-        Class<?> myDefault = wovenItf.myDefault();
+        DefaultItf proxyItf = (DefaultItf) proxyService;
+        Class<?> myDefault = proxyItf.myDefault();
         assertThat(myDefault).isSameAs(DefaultOverridingImpl.class);
     }
 
     @Test
-    public void shouldWeaveSimpleClass() throws IOException, BadValueException {
+    public void shouldProxySimpleClass() throws IOException, BadValueException {
         SimpleService simpleService = new SimpleService();
 
         ProxyClass<SimpleService> proxyFactory = ProxyBuilder.build(proxyClassLoader, SimpleService.class,
@@ -211,16 +211,16 @@ public final class ProxyBuilderTest {
 
         assertThat(proxyService).isInstanceOf(SimpleInterface.class);
 
-        SimpleInterface wovenItf = (SimpleInterface) proxyService;
+        SimpleInterface proxyItf = (SimpleInterface) proxyService;
 
         assertThat(simpleService.increase(10)).isEqualTo(20);
-        assertThat(wovenItf.increase(10)).isEqualTo(60);
+        assertThat(proxyItf.increase(10)).isEqualTo(60);
 
-        assertThat(wovenItf.hello()).isEqualTo(simpleService.hello());
+        assertThat(proxyItf.hello()).isEqualTo(simpleService.hello());
 
-        assertThat(wovenItf.times()).isEqualTo(simpleService.times());
+        assertThat(proxyItf.times()).isEqualTo(simpleService.times());
 
-        assertThat(extractFromPrintStream(ps -> wovenItf.sayHello(ps)))
+        assertThat(extractFromPrintStream(ps -> proxyItf.sayHello(ps)))
                 .isEqualTo(extractFromPrintStream(ps -> simpleService.sayHello(ps)));
     }
 
@@ -233,7 +233,7 @@ public final class ProxyBuilderTest {
     }
 
     @Test
-    public void shouldWeaveAnnotations()
+    public void shouldProxyAnnotations()
             throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException,
             InvocationTargetException {
         ProxyClass<AnnotatedService> proxyFactory = ProxyBuilder.build(proxyClassLoader, AnnotatedService.class,
@@ -253,7 +253,7 @@ public final class ProxyBuilderTest {
     }
 
     @Test
-    public void shouldWeaveTwice() {
+    public void shouldProxyTwice() {
         ProxyBuilder.build(proxyClassLoader, SimpleService.class, new Class[] { SimpleInterface.class });
 
         ProxyBuilder.build(proxyClassLoader, SimpleService.class, new Class[] { SimpleInterface.class });
@@ -261,7 +261,7 @@ public final class ProxyBuilderTest {
     }
 
     @Test
-    public void shouldWeaveGenericServices() {
+    public void shouldProxyGenericServices() {
         ProxyClass<GenericService> proxyFactory = ProxyBuilder.build(proxyClassLoader, GenericService.class,
                 new Class<?>[] { GenericInterface.class });
 
@@ -284,7 +284,7 @@ public final class ProxyBuilderTest {
     }
 
     @Test
-    public void shouldWeaveBoundedClass() throws Exception {
+    public void shouldProxyBoundedClass() throws Exception {
         ProxyClass<BoundsImpl> proxyFactory = ProxyBuilder.build(proxyClassLoader, BoundsImpl.class,
                 new Class<?>[] { BoundsItf.class });
 
@@ -317,31 +317,31 @@ public final class ProxyBuilderTest {
             assertThat(proxyMethod.getGenericReturnType()).usingComparator(TestUtils.TYPE_COMPARATOR)
                     .isEqualTo(method.getGenericReturnType());
             assertThat(proxyMethod.getExceptionTypes()).isEqualTo(method.getExceptionTypes());
-            String[] wovenGenericExceptionTypes = Stream.of(proxyMethod.getGenericExceptionTypes())
+            String[] proxyGenericExceptionTypes = Stream.of(proxyMethod.getGenericExceptionTypes())
                     .map(java.lang.reflect.Type::getTypeName)
                     .toArray(String[]::new);
             String[] genericExceptionTypes = Stream.of(method.getGenericExceptionTypes())
                     .map(java.lang.reflect.Type::getTypeName)
                     .toArray(String[]::new);
-            assertThat(wovenGenericExceptionTypes).isEqualTo(genericExceptionTypes);
+            assertThat(proxyGenericExceptionTypes).isEqualTo(genericExceptionTypes);
         }
 
     }
 
     @Test
-    public void shouldWeaveMethodParameters() throws Exception {
+    public void shouldProxyMethodParameters() throws Exception {
         @SuppressWarnings("rawtypes")
         ProxyClass<GenericParamsService> proxyFactory = ProxyBuilder.build(proxyClassLoader,
                 GenericParamsService.class,
                 new Class<?>[0]);
 
-        String[] wovenTypeParameters = Stream.of(proxyFactory.targetClass().getTypeParameters())
+        String[] proxyTypeParameters = Stream.of(proxyFactory.targetClass().getTypeParameters())
                 .map(TypeVariable::getName)
                 .toArray(String[]::new);
         String[] typeParameters = Stream.of(GenericParamsService.class.getTypeParameters()).map(TypeVariable::getName)
                 .toArray(String[]::new);
 
-        assertThat(wovenTypeParameters).containsExactly(typeParameters);
+        assertThat(proxyTypeParameters).containsExactly(typeParameters);
 
         ArrayList<MethodIdentifier> methodsToCompare = Lists.newArrayList(
                 new MethodIdentifier("myMethod", Consumer.class),
@@ -365,13 +365,13 @@ public final class ProxyBuilderTest {
             assertThat(proxyMethod.getReturnType()).isEqualTo(method.getReturnType());
             assertThat(proxyMethod.getGenericReturnType()).isEqualTo(method.getGenericReturnType());
             assertThat(proxyMethod.getExceptionTypes()).isEqualTo(method.getExceptionTypes());
-            String[] wovenGenericExceptionTypes = Stream.of(proxyMethod.getGenericExceptionTypes())
+            String[] proxyGenericExceptionTypes = Stream.of(proxyMethod.getGenericExceptionTypes())
                     .map(java.lang.reflect.Type::getTypeName)
                     .toArray(String[]::new);
             String[] genericExceptionTypes = Stream.of(method.getGenericExceptionTypes())
                     .map(java.lang.reflect.Type::getTypeName)
                     .toArray(String[]::new);
-            assertThat(wovenGenericExceptionTypes).isEqualTo(genericExceptionTypes);
+            assertThat(proxyGenericExceptionTypes).isEqualTo(genericExceptionTypes);
         }
 
     }

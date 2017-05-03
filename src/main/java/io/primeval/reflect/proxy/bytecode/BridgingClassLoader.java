@@ -4,27 +4,27 @@ import java.util.HashSet;
 import java.util.Set;
 
 public final class BridgingClassLoader extends ClassLoader {
-    private static final Set<String> ASPECIO_PACKAGES = new HashSet<>();
+    private static final Set<String> PRIMEVAL_REFLECT_PROXY_PACKAGES = new HashSet<>();
     static {
-        ASPECIO_PACKAGES.add("io.primeval.aspecio.aspect.interceptor");
-        ASPECIO_PACKAGES.add("io.primeval.aspecio.aspect.interceptor.arguments");
-        ASPECIO_PACKAGES.add("io.primeval.aspecio.internal.weaving.shared");
+        PRIMEVAL_REFLECT_PROXY_PACKAGES.add("io.primeval.reflect.proxy");
+        PRIMEVAL_REFLECT_PROXY_PACKAGES.add("io.primeval.reflect.arguments");
+        PRIMEVAL_REFLECT_PROXY_PACKAGES.add("io.primeval.reflect.proxy.shared");
     }
 
-    private final ClassLoader aspecioClassLoader;
+    private final ClassLoader primevalReflectClassLoader;
     private final ClassLoader[] classLoaders;
 
-    public BridgingClassLoader(ClassLoader[] classLoaders, ClassLoader aspecioClassLoader) {
+    public BridgingClassLoader(ClassLoader[] classLoaders, ClassLoader primevalReflectClassLoader) {
         this.classLoaders = classLoaders;
-        this.aspecioClassLoader = aspecioClassLoader;
+        this.primevalReflectClassLoader = primevalReflectClassLoader;
     }
 
     @Override
     protected Class<?> loadClass(String className, boolean resolve) throws ClassNotFoundException {
         int lastDot = className.lastIndexOf('.');
         String packageName = className.substring(0, lastDot);
-        if (ASPECIO_PACKAGES.contains(packageName)) {
-            return aspecioClassLoader.loadClass(className);
+        if (PRIMEVAL_REFLECT_PROXY_PACKAGES.contains(packageName)) {
+            return primevalReflectClassLoader.loadClass(className);
         }
 
         for (int i = 0; i < classLoaders.length; i++) {
@@ -38,5 +38,4 @@ public final class BridgingClassLoader extends ClassLoader {
         throw new ClassNotFoundException(className);
     }
 
-   
 }
