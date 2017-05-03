@@ -82,7 +82,8 @@ public final class ProxyClassGenerator {
                 superClassInternalName, itfs);
 
         for (int i = 0; i < methods.length; i++) {
-            if (!shouldIntercept.test(methods[i])) {
+            Method method = methods[i];
+            if (!shouldIntercept.test(method)) {
                 continue;
             }
             {
@@ -94,6 +95,14 @@ public final class ProxyClassGenerator {
                 fv = cw.visitField(ACC_PRIVATE + ACC_FINAL + ACC_STATIC, "cc" + i,
                         "Lio/primeval/reflect/proxy/CallContext;",
                         null, null);
+                fv.visitEnd();
+            }
+
+            if (method.getParameterCount() == 0) {
+                String suffix = InterceptionHandlerGenerator.SUFFIX_START + method.getName() + i;
+                String interceptionHandlerDescriptor = ReflectUtils.makeSuffixClassDescriptor(classToProxyDescriptor,
+                        suffix);
+                fv = cw.visitField(ACC_PRIVATE + ACC_FINAL, "handler" + i, interceptionHandlerDescriptor, null, null);
                 fv.visitEnd();
             }
         }
@@ -166,6 +175,29 @@ public final class ProxyClassGenerator {
             mv.visitVarInsn(ALOAD, 0);
             mv.visitVarInsn(ALOAD, 1);
             mv.visitFieldInsn(PUTFIELD, selfClassInternalName, "delegate", classToProxyDescriptor);
+            for (int i = 0; i < methods.length; i++) {
+                Method method = methods[i];
+                if (!shouldIntercept.test(method)) {
+                    continue;
+                }
+                if (method.getParameterCount() == 0) {
+                    String suffix = InterceptionHandlerGenerator.SUFFIX_START + method.getName() + i;
+                    String interceptionHandlerInternalName = classToProxyInternalName
+                            + suffix;
+                    String interceptionHandlerDescriptor = ReflectUtils.makeSuffixClassDescriptor(
+                            classToProxyDescriptor,
+                            suffix);
+                    Label l1b = new Label();
+                    mv.visitLabel(l1b);
+                    mv.visitVarInsn(ALOAD, 0);
+                    mv.visitTypeInsn(NEW, interceptionHandlerInternalName);
+                    mv.visitInsn(DUP);
+                    mv.visitVarInsn(ALOAD, 1);
+                    mv.visitMethodInsn(INVOKESPECIAL, interceptionHandlerInternalName,
+                            "<init>", "(" + classToProxyDescriptor + ")V", false);
+                    mv.visitFieldInsn(PUTFIELD, selfClassInternalName, "handler" + i, interceptionHandlerDescriptor);
+                }
+            }
             Label l2 = new Label();
             mv.visitLabel(l2);
             mv.visitInsn(RETURN);
@@ -173,7 +205,7 @@ public final class ProxyClassGenerator {
             mv.visitLabel(l3);
             mv.visitLocalVariable("this", selfClassDescriptor, null, l0, l3, 0);
             mv.visitLocalVariable("delegate", classToProxyDescriptor, null, l0, l3, 1);
-            mv.visitMaxs(2, 2);
+            mv.visitMaxs(-1, -1);
             mv.visitEnd();
         }
         // Methods
@@ -391,38 +423,46 @@ public final class ProxyClassGenerator {
         mv.visitFieldInsn(GETSTATIC, selfClassInternalName, "cc" + methodId,
                 "Lio/primeval/reflect/proxy/CallContext;");
 
-        String interceptionHandlerInternalName = classToProxyInternalName
-                + InterceptionHandlerGenerator.SUFFIX_START + method.getName() + methodId;
+        String suffix = InterceptionHandlerGenerator.SUFFIX_START + method.getName() + methodId;
 
-        mv.visitTypeInsn(NEW, interceptionHandlerInternalName);
-        mv.visitInsn(DUP);
-        mv.visitVarInsn(ALOAD, 0);
-        mv.visitFieldInsn(GETFIELD, selfClassInternalName, "delegate", classToProxyDescriptor);
-
-        String argsClassInternalName = null;
-        String argsClassDescriptor = null;
-        if (method.getParameterCount() > 0) {
-            String argsSuffix = "$argsFor$" + method.getName() + methodId;
-            argsClassInternalName = classToProxyInternalName + argsSuffix;
-            argsClassDescriptor = ReflectUtils.makeSuffixClassDescriptor(classToProxyDescriptor, argsSuffix);
-            mv.visitTypeInsn(NEW, argsClassInternalName);
+        if (paramCount == 0) {
+            String interceptionHandlerDescriptor = ReflectUtils.makeSuffixClassDescriptor(
+                    classToProxyDescriptor,
+                    suffix);
+            mv.visitVarInsn(ALOAD, 0);
+            mv.visitFieldInsn(GETFIELD, selfClassInternalName, "handler" + methodId, interceptionHandlerDescriptor);
+        } else {
+            String interceptionHandlerInternalName = classToProxyInternalName + suffix;
+            mv.visitTypeInsn(NEW, interceptionHandlerInternalName);
             mv.visitInsn(DUP);
-            mv.visitFieldInsn(GETSTATIC, selfClassInternalName, "cc" + methodId,
-                    "Lio/primeval/reflect/proxy/CallContext;");
-            mv.visitFieldInsn(GETFIELD, "io/primeval/reflect/proxy/CallContext", "parameters",
-                    "Ljava/util/List;");
-            for (int i = 0; i < paramCount; i++) {
-                mv.visitVarInsn(getLoadCode(parameters[i].getType()), paramIndices[i]); // delegate parameters.
-            }
-            String constDesc = Type.getMethodDescriptor(Type.VOID_TYPE,
-                    Stream.concat(Stream.of(List.class), Stream.of(method.getParameterTypes())).map(Type::getType)
-                            .toArray(Type[]::new));
-            mv.visitMethodInsn(INVOKESPECIAL, argsClassInternalName, "<init>", constDesc, false);
-        }
+            mv.visitVarInsn(ALOAD, 0);
+            mv.visitFieldInsn(GETFIELD, selfClassInternalName, "delegate", classToProxyDescriptor);
 
-        mv.visitMethodInsn(INVOKESPECIAL, interceptionHandlerInternalName, "<init>",
-                "(" + classToProxyDescriptor + ReflectUtils.nullToEmpty(argsClassDescriptor) + ")V",
-                false);
+            String argsClassInternalName = null;
+            String argsClassDescriptor = null;
+            if (method.getParameterCount() > 0) {
+                String argsSuffix = "$argsFor$" + method.getName() + methodId;
+                argsClassInternalName = classToProxyInternalName + argsSuffix;
+                argsClassDescriptor = ReflectUtils.makeSuffixClassDescriptor(classToProxyDescriptor, argsSuffix);
+                mv.visitTypeInsn(NEW, argsClassInternalName);
+                mv.visitInsn(DUP);
+                mv.visitFieldInsn(GETSTATIC, selfClassInternalName, "cc" + methodId,
+                        "Lio/primeval/reflect/proxy/CallContext;");
+                mv.visitFieldInsn(GETFIELD, "io/primeval/reflect/proxy/CallContext", "parameters",
+                        "Ljava/util/List;");
+                for (int i = 0; i < paramCount; i++) {
+                    mv.visitVarInsn(getLoadCode(parameters[i].getType()), paramIndices[i]); // delegate parameters.
+                }
+                String constDesc = Type.getMethodDescriptor(Type.VOID_TYPE,
+                        Stream.concat(Stream.of(List.class), Stream.of(method.getParameterTypes())).map(Type::getType)
+                                .toArray(Type[]::new));
+                mv.visitMethodInsn(INVOKESPECIAL, argsClassInternalName, "<init>", constDesc, false);
+            }
+
+            mv.visitMethodInsn(INVOKESPECIAL, interceptionHandlerInternalName, "<init>",
+                    "(" + classToProxyDescriptor + ReflectUtils.nullToEmpty(argsClassDescriptor) + ")V",
+                    false);
+        }
 
         Class<?> invokeReturnType = returnType.isPrimitive() ? returnType : Object.class;
         String invokeReturnTypeDescriptor = Type.getDescriptor(invokeReturnType);
