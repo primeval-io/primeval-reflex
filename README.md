@@ -20,20 +20,19 @@ Until a stable release (soon), the snapshot version is available in the Sonatype
 primeval-reflects requires Java 8 and depends on the SLF4J logging API and the ASM bytecode manipulation library. 
 
 ```xml
+	<dependency>
+		<groupId>org.slf4j</groupId>
+		<artifactId>slf4j-api</artifactId>
+		<version>1.7.12</version>
+		<scope>provided</scope>
+	</dependency>
 
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-			<version>1.7.12</version>
-			<scope>provided</scope>
-		</dependency>
 
-
-		<dependency>
-			<groupId>org.ow2.asm</groupId>
-			<artifactId>asm</artifactId>
-			<version>5.2</version>
-		</dependency>
+	<dependency>
+		<groupId>org.ow2.asm</groupId>
+		<artifactId>asm</artifactId>
+		<version>5.2</version>
+	</dependency>
 ```
 
 # Proxy features
@@ -84,19 +83,18 @@ final class HelloImpl implements Hello {
 
 We can proxy it this way.
 
-```
+```java
 
-        ProxyClass<HelloImpl> proxyClass = ProxyBuilder.build(HelloImpl.class,
-                new Class<?>[] { Hello.class });
+	ProxyClass<HelloImpl> proxyClass = ProxyBuilder.build(HelloImpl.class, new Class<?>[] { Hello.class });
 
-        HelloImpl helloImpl = new HelloImpl();
+	HelloImpl helloImpl = new HelloImpl();
         
-        Proxy proxy = proxyClass.newInstance(helloImpl);
+	Proxy proxy = proxyClass.newInstance(helloImpl);
+       
+	Hello helloProxy = (Hello) proxy;
+	String helloMsg = helloProxy.getHello("world");
         
-        Hello helloProxy = (Hello) proxy;
-        String helloMsg = helloProxy.getHello("world");
-        
-        System.out.println(helloMsg);            
+	System.out.println(helloMsg);            
 ```
 
 This prints `Hello world`. The call was successfully proxied, but we did not intercept it. Primeval-Reflect proxies support a dynamic change of interceptors, and are always created with the `Interceptor.DEFAULT` interceptor, that simply delegates the original call.
@@ -159,8 +157,7 @@ So far so good! In case of exceptions we could simply use `try`/`catch`/`finally
 
 What if we wanted our two interceptors to be active? Nothing's easier ;)
 
-```
-	
+```java 	
 	Interceptor composedInterceptor = Interceptors.compose(universeInterceptor, exclamationMarkInterceptor);
 	proxy.setInterceptor(exclamationMarkInterceptor);
 	
@@ -179,13 +176,12 @@ For instance, to intercept a method with return type `int` without boxing, one n
 
 ```java
 
-            public int onCall(CallContext callContext, IntInterceptionHandler handler) throws Exception {
-                if (callContext.method.getName().equals("increase")) {		
-                    return handler.invoke() * 3;
-
-                }
-                return handler.invoke();
-            }
+	public int onCall(CallContext callContext, IntInterceptionHandler handler) throws Exception {
+		if (callContext.method.getName().equals("increase")) {		
+			return handler.invoke() * 3;
+		}
+		return handler.invoke();
+	}
            
 ```
 
@@ -215,14 +211,13 @@ The annotation must have runtime retention. To intercept it, we can use the foll
 
 ```java
 
-        ProxyClass<AnnotatedHello> proxyClass = ProxyBuilder.build(AnnotatedHello.class,
-                new Class<?>[] { Hello.class });
+	ProxyClass<AnnotatedHello> proxyClass = ProxyBuilder.build(AnnotatedHello.class, Class<?>[] { Hello.class });
 
-        AnnotatedHello annotatedHello = new AnnotatedHello();
+	AnnotatedHello annotatedHello = new AnnotatedHello();
 
-        Proxy proxy = proxyClass.newInstance(annotatedHello);
+	Proxy proxy = proxyClass.newInstance(annotatedHello);
 
-        Interceptor overrideReturnInterceptor = new AnnotationInterceptor<OverrideReturn>() {
+	Interceptor overrideReturnInterceptor = new AnnotationInterceptor<OverrideReturn>() {
 
             @SuppressWarnings("unchecked")
             @Override
@@ -240,12 +235,13 @@ The annotation must have runtime retention. To intercept it, we can use the foll
                 return OverrideReturn.class;
             }
         };
-        proxy.setInterceptor(overrideReturnInterceptor);
         
-        Hello annotatedHelloProxy = (Hello) proxy;
-        String helloMsg = annotatedHelloProxy.getHello("world");
+	proxy.setInterceptor(overrideReturnInterceptor);
         
-        System.out.println(helloMsg);
+	Hello annotatedHelloProxy = (Hello) proxy;
+	String helloMsg = annotatedHelloProxy.getHello("world");
+        
+	System.out.println(helloMsg);
 ```
 
 This prints `Goodbye!`.
