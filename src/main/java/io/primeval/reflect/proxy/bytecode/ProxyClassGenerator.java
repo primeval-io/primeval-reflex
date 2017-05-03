@@ -327,8 +327,8 @@ public final class ProxyClassGenerator {
         }
     }
 
-    private static void writeSimpleDelegationMethod(Class<?> clazzToProxy, String proxyClassInternalName,
-            String proxyClassDescriptor,
+    private static void writeSimpleDelegationMethod(Class<?> clazzToProxy, String classToProxyInternalName,
+            String classToProxyDescriptor,
             String selfClassInternalName, String selfClassDescriptor, ClassWriter cw,
             MethodVisitor mv, Method method, int methId) throws IllegalAccessException, InvocationTargetException {
         String methodDescriptor = Type.getMethodDescriptor(method);
@@ -344,6 +344,9 @@ public final class ProxyClassGenerator {
         Class<?> returnType = method.getReturnType();
 
         mv = cw.visitMethod(ACC_PUBLIC + ACC_FINAL, methodName, methodDescriptor, methodSignature, exceptionTypes);
+        addMethodAnnotations(method, mv);
+        addMethodParameterAnnotations(method, mv);
+
         Parameter[] parameters = method.getParameters();
         int paramCount = parameters.length;
         int[] paramIndices = new int[paramCount];
@@ -355,31 +358,29 @@ public final class ProxyClassGenerator {
             nextVarIndex += getTypeSize(param.getType());
         }
 
-        addMethodAnnotations(method, mv);
-        addMethodParameterAnnotations(method, mv);
-
+        mv.visitCode();
+        Label l0 = new Label();
+        mv.visitLabel(l0);
         mv.visitVarInsn(ALOAD, 0); // "this"
-        mv.visitFieldInsn(GETFIELD, selfClassInternalName, "delegate", proxyClassDescriptor);
+        mv.visitFieldInsn(GETFIELD, selfClassInternalName, "delegate", classToProxyDescriptor);
         for (int i = 0; i < parameters.length; i++) {
             mv.visitVarInsn(getLoadCode(parameters[i].getType()), paramIndices[i]); // delegate parameters.
         }
-        mv.visitMethodInsn(INVOKEVIRTUAL, proxyClassInternalName, methodName, methodDescriptor, false);
+        mv.visitMethodInsn(INVOKEVIRTUAL, classToProxyInternalName, methodName, methodDescriptor, false);
 
         mv.visitInsn(getReturnCode(returnType)); // The actual return entry.
 
-        // Variable table.
-        Label l4 = new Label();
-        mv.visitLabel(l4);
-        mv.visitLocalVariable("this", selfClassDescriptor, null, l4, l4, 0);
+        Label l1 = new Label();
+        mv.visitLabel(l1);
+        mv.visitLocalVariable("this", selfClassDescriptor, null, l0, l1, 0);
         for (int i = 0; i < paramCount; i++) {
             Parameter param = parameters[i];
             Class<?> type = param.getType();
             mv.visitLocalVariable(param.getName(), Type.getDescriptor(type),
-                    TypeUtils.getDescriptorForJavaType(param.getParameterizedType()), l4, l4, paramIndices[i]);
+                    TypeUtils.getDescriptorForJavaType(param.getParameterizedType()), l0, l1, paramIndices[i]);
         }
-
+        mv.visitMaxs(-1, -1);
         mv.visitEnd();
-
     }
 
     private static void writeInterceptedMethod(Class<?> clazzToProxy, String classToProxyInternalName,
@@ -416,7 +417,6 @@ public final class ProxyClassGenerator {
         mv.visitCode();
         Label l0 = new Label();
         mv.visitLabel(l0);
-        mv.visitLineNumber(49, l0);
         mv.visitVarInsn(ALOAD, 0);
         mv.visitFieldInsn(GETFIELD, selfClassInternalName, "interceptor",
                 "Lio/primeval/reflect/proxy/Interceptor;");
