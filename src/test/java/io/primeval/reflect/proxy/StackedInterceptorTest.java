@@ -1,4 +1,4 @@
-package io.primeval.reflect.proxy.composite;
+package io.primeval.reflect.proxy;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -9,16 +9,17 @@ import org.junit.Test;
 import io.primeval.reflect.arguments.Arguments;
 import io.primeval.reflect.proxy.CallContext;
 import io.primeval.reflect.proxy.Interceptor;
+import io.primeval.reflect.proxy.Interceptors;
 import io.primeval.reflect.proxy.handler.InterceptionHandler;
 import io.primeval.reflect.proxy.shared.SharedProxyUtils;
 
-public class CompositeInterceptorTest {
+public class StackedInterceptorTest {
 
     @Test
     public void testShouldCompose() {
 
-        Method meth = SharedProxyUtils.getMethodUnchecked(CompositeInterceptorTest.class, "helloName", String.class);
-        CallContext cc = new CallContext(CompositeInterceptorTest.class, meth,
+        Method meth = SharedProxyUtils.getMethodUnchecked(StackedInterceptorTest.class, "helloName", String.class);
+        CallContext cc = new CallContext(StackedInterceptorTest.class, meth,
                 Arrays.asList(meth.getParameters()));
 
         String firstParamName = cc.parameters.get(0).getName();
@@ -73,7 +74,7 @@ public class CompositeInterceptorTest {
             }
         };
 
-        Interceptor composedInterceptor = Interceptors.compose(intercept1, intercept2);
+        Interceptor composedInterceptor = Interceptors.stack(intercept1, intercept2);
 
         Assertions.assertThat(helloName("world")).isEqualTo("Hello world");
 

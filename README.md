@@ -159,14 +159,14 @@ So far so good! In case of exceptions we could simply use `try`/`catch`/`finally
 What if we wanted our two interceptors to be active? Nothing's easier ;)
 
 ```java 	
-	Interceptor composedInterceptor = Interceptors.compose(universeInterceptor, exclamationMarkInterceptor);
+	Interceptor composedInterceptor = Interceptors.stack(universeInterceptor, exclamationMarkInterceptor);
 	proxy.setInterceptor(composedInterceptor);
 	
 	String helloMsg = helloProxy.getHello("world");
 	System.out.println(helloMsg);
 ```
 
-As expected, this printed `Hello world^Wuniverse!`. Composing interceptors stacks them in the order you'd expect, and each of them has its full capabilities. For instance, if an interceptor up in the stack invokes the target method with modified arguments, further interceptors down the line will have these. If an interceptor down the stack throws an exception, interceptors up the stack will get it and possibly catch it. No surprises there, it _is_ an actual Java call-stack, and the code for this is not generated: it is plain Java you can follow with debugger and source code.
+As expected, this printed `Hello world^Wuniverse!`. Interceptors are stacked in the order you'd expect, and each of them has its full capabilities. For instance, if an interceptor up in the stack invokes the target method with modified arguments, further interceptors down the line will have these. If an interceptor down the stack throws an exception, interceptors up the stack will get it and possibly catch it. No surprises there, it _is_ an actual Java call-stack, and the code for this is not generated: it is plain Java you can follow with debugger and source code.
 
 
 # Dealing with primitive types

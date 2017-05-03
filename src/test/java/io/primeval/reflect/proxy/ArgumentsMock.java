@@ -1,4 +1,4 @@
-package io.primeval.reflect.proxy.composite;
+package io.primeval.reflect.proxy;
 
 import java.lang.reflect.Parameter;
 import java.util.HashMap;

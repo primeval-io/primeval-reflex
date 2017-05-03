@@ -3,11 +3,11 @@ package io.primeval.reflect.sample;
 import io.primeval.reflect.arguments.Arguments;
 import io.primeval.reflect.proxy.CallContext;
 import io.primeval.reflect.proxy.Interceptor;
+import io.primeval.reflect.proxy.Interceptors;
 import io.primeval.reflect.proxy.annotation.AnnotationInterceptor;
 import io.primeval.reflect.proxy.bytecode.Proxy;
 import io.primeval.reflect.proxy.bytecode.ProxyBuilder;
 import io.primeval.reflect.proxy.bytecode.ProxyClass;
-import io.primeval.reflect.proxy.composite.Interceptors;
 import io.primeval.reflect.proxy.handler.InterceptionHandler;
 
 public class SampleCode {
@@ -82,7 +82,7 @@ public class SampleCode {
             System.out.println(helloMsg);
         }
 
-        Interceptor composedInterceptor = Interceptors.compose(universeInterceptor, exclamationMarkInterceptor);
+        Interceptor composedInterceptor = Interceptors.stack(universeInterceptor, exclamationMarkInterceptor);
         proxy.setInterceptor(composedInterceptor);
 
         {

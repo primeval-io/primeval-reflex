@@ -9,9 +9,9 @@ import org.assertj.core.api.Assertions;
 import org.junit.Test;
 
 import io.primeval.reflect.arguments.Arguments;
+import io.primeval.reflect.proxy.ArgumentsMock;
 import io.primeval.reflect.proxy.bytecode.gen.InterceptionHandlerGenerator;
 import io.primeval.reflect.proxy.bytecode.gen.MethodArgumentsGenerator;
-import io.primeval.reflect.proxy.composite.ArgumentsMock;
 import io.primeval.reflect.proxy.handler.DoubleInterceptionHandler;
 import io.primeval.reflect.proxy.handler.IntInterceptionHandler;
 import io.primeval.reflect.proxy.handler.InterceptionHandler;

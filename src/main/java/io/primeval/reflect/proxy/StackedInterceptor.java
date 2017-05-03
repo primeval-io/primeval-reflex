@@ -1,4 +1,4 @@
-package io.primeval.reflect.proxy.composite;
+package io.primeval.reflect.proxy;
 
 import java.util.Iterator;
 import java.util.function.Consumer;
@@ -10,8 +10,6 @@ import java.util.function.ToLongFunction;
 import java.util.stream.Stream;
 
 import io.primeval.reflect.arguments.Arguments;
-import io.primeval.reflect.proxy.CallContext;
-import io.primeval.reflect.proxy.Interceptor;
 import io.primeval.reflect.proxy.handler.BooleanInterceptionHandler;
 import io.primeval.reflect.proxy.handler.ByteInterceptionHandler;
 import io.primeval.reflect.proxy.handler.CharInterceptionHandler;
@@ -38,14 +36,14 @@ import io.primeval.reflect.proxy.handler.impl.SimpleShortInterceptionHandler.ToS
 import io.primeval.reflect.proxy.handler.impl.SimpleVoidInterceptionHandler;
 
 /**
- * An Interceptor composed of several Interceptors. Build with {@link Interceptors#compose(Interceptor...)}.
+ * An Interceptor composed of several Interceptors. Build with {@link Interceptors#stack(Interceptor...)}.
  */
-final class CompositeInterceptor implements Interceptor {
+final class StackedInterceptor implements Interceptor {
 
     private final Interceptor[] interceptors;
     private String repr;
 
-    public CompositeInterceptor(Interceptor[] interceptors) {
+    public StackedInterceptor(Interceptor[] interceptors) {
         if (interceptors == null || interceptors.length == 0) {
             throw new IllegalArgumentException("interceptors must be non-empty");
         }
@@ -67,7 +65,7 @@ final class CompositeInterceptor implements Interceptor {
 
     @Override
     public <T, E extends Throwable> T onCall(CallContext context, InterceptionHandler<T> handler) throws E {
-        return CompositeInterceptor.<T, RuntimeException> callObject(0, interceptors, context, handler.getArguments(),
+        return StackedInterceptor.<T, RuntimeException> callObject(0, interceptors, context, handler.getArguments(),
                 handler::invoke);
     }
 

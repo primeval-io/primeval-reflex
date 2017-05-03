@@ -8,7 +8,7 @@ import io.primeval.reflect.proxy.bytecode.gen.BytecodeGenUtils;
 import io.primeval.reflect.proxy.testset.api.generic.GenericService;
 import io.primeval.reflect.proxy.testset.simplest.SimplestService;
 
-public class TypeUtilsTest {
+public class BytecodeGenUtilsTest {
 
     @Test
     public void shouldReturnNullForNonGeneric() {
