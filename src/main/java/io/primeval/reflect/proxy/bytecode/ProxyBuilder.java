@@ -21,6 +21,10 @@ import io.primeval.reflect.proxy.bytecode.gen.ProxyClassGenerator;
 public final class ProxyBuilder {
     private static final Logger LOGGER = LoggerFactory.getLogger(ProxyBuilder.class);
 
+    public static <T> ProxyClass<T> build(Class<T> targetClass, Class<?>[] interfaces) {
+        return build(new ProxyClassLoader(targetClass.getClassLoader()), targetClass, interfaces);
+    }
+
     public static <T> ProxyClass<T> build(ProxyClassLoader dynamicClassLoader, Class<T> targetClass,
             Class<?>[] interfaces) {
         return build(dynamicClassLoader, targetClass, interfaces, m -> true);
