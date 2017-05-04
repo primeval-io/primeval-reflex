@@ -8,15 +8,15 @@
 		<relativePath />
 	</parent>
 
-	<artifactId>primeval-reflect</artifactId>
+	<artifactId>primeval-reflex</artifactId>
 	<version>1.0.0-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
-	<name>Primeval Reflect</name>
-	<description>Primeval Reflect</description>
+	<name>Primeval Reflex</name>
+	<description>Primeval Reflex, a Java reflection library</description>
 
 	<scm>
-		<url>https://github.com/primeval-io/primeval-reflect</url>
+		<url>https://github.com/primeval-io/primeval-reflex</url>
 	</scm>
 
 	<dependencies>
