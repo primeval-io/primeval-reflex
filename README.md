@@ -98,7 +98,7 @@ We can proxy it this way.
 	System.out.println(helloMsg);            
 ```
 
-This prints `Hello world`. The call was successfully proxied, but we did not intercept it. Primeval-Reflect proxies support a dynamic change of interceptors, and are always created with the `Interceptor.DEFAULT` interceptor, that simply delegates the original call.
+This prints `Hello world`. The call was successfully proxied, but we did not intercept it. Primeval Reflex' proxies support a dynamic change of interceptors, and are always created with the `Interceptor.DEFAULT` interceptor, that simply delegates the original call.
 
 To set an interceptor, we first have to create one. Let us make one that adds an exclamation mark (!) at the end of the returned `String`. Normally, interceptors are very generic, but for the sake of the demo we will expect the method we intercept returns a `String`. Keep in mind that the same interceptor will be called for _all_ intercepted methods (by default, all of the proxy's methods that are not inherited of `java.lang.Object`).
 
