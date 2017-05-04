@@ -1,6 +1,6 @@
-# primeval-reflect [![Build Status](https://travis-ci.org/primeval-io/primeval-reflect.svg?branch=master)](https://travis-ci.org/primeval-io/primeval-reflect) [![Gitter primeval-io/Lobby](https://badges.gitter.im/primeval-io/Lobby.svg)](https://gitter.im/primeval-io/Lobby)
+# primeval-reflex [![Build Status](https://travis-ci.org/primeval-io/primeval-reflex.svg?branch=master)](https://travis-ci.org/primeval-io/primeval-reflex) [![Gitter primeval-io/Lobby](https://badges.gitter.im/primeval-io/Lobby.svg)](https://gitter.im/primeval-io/Lobby)
 
-primeval-reflect is a Java reflection library, currently providing an improved JDK Proxy. Additional utilities might be added later. It is OSGi compatible, but it can be used within any Java application.
+Primeval Reflex is a Java reflection library, currently providing an improved JDK Proxy. Additional utilities might be added later. It is OSGi compatible, but it can be used within any Java application.
 
 # Maven coordinates
 
@@ -8,7 +8,7 @@ primeval-reflect is a Java reflection library, currently providing an improved J
 ```xml
 
 	<groupId>io.primeval</groupId>
-	<artifactId>primeval-reflect</artifactId>
+	<artifactId>primeval-reflex</artifactId>
 	<version>1.0.0-SNAPSHOT</version>
 ```
 
@@ -17,7 +17,7 @@ Until a stable release (soon), the snapshot version is available in the Sonatype
 
 # Dependencies
 
-primeval-reflects requires Java 8 and depends on the SLF4J logging API and the ASM bytecode manipulation library. 
+Primeval Reflex requires Java 8 and depends on the SLF4J logging API and the ASM bytecode manipulation library. 
 
 ```xml
 	<dependency>
@@ -258,10 +258,10 @@ Post a new GitHub issue or join on [Gitter](https://gitter.im/primeval-io/Lobby)
 
 # Author
 
-primeval-reflect was developed by Simon Chemouil.
+primeval-reflex was developed by Simon Chemouil.
 
 # Copyright
 
 (c) 2016-2017, Simon Chemouil, Lambdacube
 
-primeval-reflect is part of the Primeval project.
+primeval-reflex is part of the Primeval project.
