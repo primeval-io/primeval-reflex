@@ -20,7 +20,7 @@
 	</scm>
 
 	<properties>
-		<primeval-3rdparty-bom.version>1.0.0-SNAPSHOT</primeval-3rdparty-bom.version>
+		<primeval-3rdparty-bom.version>1.0.0</primeval-3rdparty-bom.version>
 		<ow2-asm.version>5.1</ow2-asm.version>
 	</properties>
 
